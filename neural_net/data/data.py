@@ -1,67 +1,67 @@
-from PIL import Image
-import os
 import numpy as np
-import csv
+import fer_csv as FER
 
-class FER_CSV:
-    filename = '../data/facial-recognition/fer2013/fer2013.csv'
+class Data:
+    max_num_pixels = 2304
+    data_sources   = [
+        FER.FER_CSV()
+    ]
 
-    def __init__(self):
-        self.csv = csv.DictReader(open(self.filename))
-        self.X   = []
-        self.Y   = []
+    def __init__(self, print_progress = False):
+        self.print_progress = print_progress
+        self.Xtrain         = None
+        self.Ytrain         = None
+        self.Xdev           = None
+        self.Ydev           = None
+        self.Xtest          = None
+        self.Ytest          = None
 
-    def __label(self, row):
-        # For the Smile-O-Meter we want three classes: 0 = Netural, 1 = Happy,   2 = Sad
-        # Need to convert from the FER labels of:      0 = Angry,   1 = Disgust, 2 = Fear, 3 = Happy, 4 = Sad, 5 = Surprise, 6 = Neutral
-        fer_label = int(row['emotion'])
+    def load_data(self):
+        for data_source in self.data_sources:
+            data_source.load_data(self.print_progress)
 
-        if fer_label == 3:
-            label = 1
-        elif fer_label < 5:
-            label = 2
-        else:
-            label = 0
+            if self.Xtrain == None:
+                self.Xtrain = data_source.Xtrain
+                self.Ytrain = data_source.Ytrain
 
-        return label
+                self.Xdev = data_source.Xdev
+                self.Ydev = data_source.Ydev
 
-    def __pixels(self, row):
-        return np.array(row['pixels'].split(), 'int')
+                self.Xtest = data_source.Xtest
+                self.Ytest = data_source.Ytest
+            else:
+                self.Xtrain = np.column_stack((self.Xtrain, data_source.Xtrain))
+                self.Ytrain = np.column_stack((self.Ytrain, data_source.Ytrain))
 
-    def load_data(self, printProgress = False):
-        for index, row in enumerate(self.csv):
-            label  = self.__label(row)
-            pixels = self.__pixels(row)
+                self.Xdev = np.column_stack((self.Xdev, data_source.Xdev))
+                self.Ydev = np.column_stack((self.Ydev, data_source.Ydev))
 
-            if printProgress == True and index % 100 == 0:
-                print("label is", label)
-                print("shape of pixels is", pixels.shape)
-                print("pixels are", pixels)
-
-            self.X.append(pixels)
-            self.Y.append(label)
-
-        self.X = np.array(self.X)
-        self.Y = np.reshape(np.array(self.Y), (-1, 1))
-
-        return True
-
-fer_csv = FER_CSV()
-fer_csv.load_data(True)
-print('X is a', type(fer_csv.X))
-print('X.shape is', fer_csv.X.shape)
-print('Y is a', type(fer_csv.Y))
-print('Y.shape is', fer_csv.Y.shape)
+                self.Xtest = np.column_stack((self.Xtest, data_source.Xtest))
+                self.Ytest = np.column_stack((self.Ytest, data_source.Ytest))
 
 
-# for filename in os.listdir('../data/facial-recognition/google_image_search/happy'):
-#     print(filename)
-# test = Image.open("../data/facial-recognition/IMFDB_final/ANR/Missamma/images/ANR_1.jpg")
-#
-# arr  = np.array(test)
-# print("array is", arr)
-# print("reshaped array is", np.reshape(arr, -1))
+d = Data(True)
+d.load_data()
+print('Xtrain is a', type(d.Xtrain))
+print('Xtrain.shape is', d.Xtrain.shape)
+print('Xtrain is', d.Xtrain)
+print('Ytrain is a', type(d.Ytrain))
+print('Ytrain.shape is', d.Ytrain.shape)
+print('Ytrain is', d.Ytrain)
 
+print('Xdev is a', type(d.Xdev))
+print('Xdev.shape is', d.Xdev.shape)
+print('Xdev is', d.Xdev)
+print('Ydev is a', type(d.Ydev))
+print('Ydev.shape is', d.Ydev.shape)
+print('Ydev is', d.Ydev)
+
+print('Xtest is a', type(d.Xtest))
+print('Xtest.shape is', d.Xtest.shape)
+print('Xtest is', d.Xtest)
+print('Ytest is a', type(d.Ytest))
+print('Ytest.shape is', d.Ytest.shape)
+print('Ytest is', d.Ytest)
 # Data Wranglin'
 # We've got data from various sources here, totaling 47,156 without IMFDB, and
 # 81,688 with IMFDB. Going to scale every image down to 48x48 and grey them out.
@@ -75,7 +75,13 @@ print('Y.shape is', fer_csv.Y.shape)
 # are nested), locate the .txt file which contains a list of images in the directory
 # and emotional labels (NEUTRAL, SADNESS, HAPPINESS, FEAR), and load each image into
 # Python, add a 1 to the Y vector if the label is HAPPINESS, and then load the image
-# into the script and unroll it into the X matrix.
+# into the script and unroll it into the X matrix. Eg:
+# from PIL import Image
+# import os
+# for filename in os.listdir('../data/facial-recognition/google_image_search/happy'):
+#     print(filename)
+# test = Image.open("../data/facial-recognition/IMFDB_final/ANR/Missamma/images/ANR_1.jpg")
+
 #
 # FER (Facial Expression Recognition Challenge) - 28,709 training examples, 3,589
 # dev and test examples (35,887 total). You may want to adjust this train/dev/test split. You'll
