@@ -1,5 +1,5 @@
-import numpy as np
-import fer_csv as FER
+import numpy   as np
+import sources.fer_csv as FER
 
 class Data:
     max_num_pixels = 2304
@@ -16,7 +16,9 @@ class Data:
         self.Xtest          = None
         self.Ytest          = None
 
-    def load_data(self):
+    # def normalize(self):
+
+    def load(self):
         for data_source in self.data_sources:
             data_source.load_data(self.print_progress)
 
@@ -41,7 +43,7 @@ class Data:
 
 
 d = Data(True)
-d.load_data()
+d.load()
 print('Xtrain is a', type(d.Xtrain))
 print('Xtrain.shape is', d.Xtrain.shape)
 print('Xtrain is', d.Xtrain)
@@ -62,6 +64,7 @@ print('Xtest is', d.Xtest)
 print('Ytest is a', type(d.Ytest))
 print('Ytest.shape is', d.Ytest.shape)
 print('Ytest is', d.Ytest)
+
 # Data Wranglin'
 # We've got data from various sources here, totaling 47,156 without IMFDB, and
 # 81,688 with IMFDB. Going to scale every image down to 48x48 and grey them out.
