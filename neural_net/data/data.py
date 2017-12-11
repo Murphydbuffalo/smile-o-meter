@@ -16,7 +16,18 @@ class Data:
         self.Xtest          = None
         self.Ytest          = None
 
-    # def normalize(self):
+    def __norm(self, matrix):
+        # Normalizes input data to have mean 0 and variance 1
+        means               = np.mean(matrix, 0)
+        mean_zero_data      = matrix - means
+        standard_deviations = np.std(mean_zero_data, 0)
+
+        return (matrix - means) / standard_deviations
+
+    def normalize(self):
+        self.Xtrain_norm = self.__norm(self.Xtrain)
+        self.Xdev_norm   = self.__norm(self.Xdev)
+        self.Xtest_norm  = self.__norm(self.Xtest)
 
     def load(self):
         for data_source in self.data_sources:
@@ -42,11 +53,17 @@ class Data:
                 self.Ytest = np.column_stack((self.Ytest, data_source.Ytest))
 
 
-d = Data(True)
+d = Data()
 d.load()
+d.normalize()
 print('Xtrain is a', type(d.Xtrain))
 print('Xtrain.shape is', d.Xtrain.shape)
 print('Xtrain is', d.Xtrain)
+
+print('Xtrain_norm is', d.Xtrain_norm)
+print('Xtrain_norm mean is', np.mean(d.Xtrain_norm, 0))
+print('Xtrain_norm standard deviation is', np.std(d.Xtrain_norm, 0))
+
 print('Ytrain is a', type(d.Ytrain))
 print('Ytrain.shape is', d.Ytrain.shape)
 print('Ytrain is', d.Ytrain)
@@ -54,6 +71,11 @@ print('Ytrain is', d.Ytrain)
 print('Xdev is a', type(d.Xdev))
 print('Xdev.shape is', d.Xdev.shape)
 print('Xdev is', d.Xdev)
+
+print('Xdev_norm is', d.Xdev_norm)
+print('Xdev_norm mean is', np.mean(d.Xdev_norm, 0))
+print('Xdev_norm standard deviation is', np.std(d.Xdev_norm, 0))
+
 print('Ydev is a', type(d.Ydev))
 print('Ydev.shape is', d.Ydev.shape)
 print('Ydev is', d.Ydev)
@@ -61,6 +83,11 @@ print('Ydev is', d.Ydev)
 print('Xtest is a', type(d.Xtest))
 print('Xtest.shape is', d.Xtest.shape)
 print('Xtest is', d.Xtest)
+
+print('Xtest_norm is', d.Xtest_norm)
+print('Xtest_norm mean is', np.mean(d.Xtest_norm, 0))
+print('Xtest_norm standard deviation is', np.std(d.Xtest_norm, 0))
+
 print('Ytest is a', type(d.Ytest))
 print('Ytest.shape is', d.Ytest.shape)
 print('Ytest is', d.Ytest)
