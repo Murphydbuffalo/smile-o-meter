@@ -1,8 +1,9 @@
 import numpy as np
 import csv
+import os
 
 class FER_CSV:
-    filename = '../data/facial-recognition/fer2013/fer2013.csv'
+    filename = './neural_net/data/sources/fer2013.csv'
 
     def __init__(self):
         self.csv    = csv.DictReader(open(self.filename))
