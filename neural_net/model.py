@@ -18,6 +18,18 @@ network_architecture = [
 weights, biases = Initialize(network_architecture).weights_and_biases()
 predictions     = ForwardProp(weights, biases, d.Xtrain_norm).run()
 print("predictions are", predictions)
+# NEXT STEPS:
+# Write out the normalized data to CSVs and write code to import those CSVs into
+# NumPy arrays. This will prevent you from having to generate this data every time
+# you want to run your model.
+#
+# Replace sigmoid with softmax.
+#
+# Cost function for softmax.
+#
+# Backprop (probably will need to go back and update forward prop to cache certain values)
+# for use in backprop.
+#
 # print(len(weights))
 # for matrix in weights:
 #     print(matrix)

@@ -7,19 +7,13 @@ class ForwardProp:
         self.X       = X
 
     def run(self):
-        Z1 = np.dot(self.weights[0], self.X)  + self.biases[0]
-        A1 = self.__relu(Z1)
+        A = self.X
 
-        Z2 = np.dot(self.weights[1], A1) + self.biases[1]
-        A2 = self.__relu(Z2)
+        for i in range(0, len(self.weights)):
+            Z = np.dot(self.weights[i], A)  + self.biases[i]
+            A = self.__relu(Z)
 
-        Z3 = np.dot(self.weights[2], A2) + self.biases[2]
-        A3 = self.__relu(Z3)
-
-        Z4 = np.dot(self.weights[3], A3) + self.biases[3]
-        A4 = self.__sigmoid(Z4)
-
-        return A4
+        return = self.__sigmoid(Z)
 
     def __relu(self, Z):
         # NOTE: np.maximum is NOT the same as np.max, which find the maximum value
