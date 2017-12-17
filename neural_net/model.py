@@ -1,13 +1,14 @@
 import numpy as np
-from data.loader import Loader
-from initialize  import Initialize
+from data.loader  import Loader
+from initialize   import Initialize
+from forward_prop import ForwardProp
 
 d = Loader()
 d.load()
 d.normalize()
 
 network_architecture = [
-    d.Xtrain.shape[0],
+    d.Xtrain_norm.shape[0],
     5,
     3,
     2,
@@ -15,13 +16,15 @@ network_architecture = [
 ]
 
 weights, biases = Initialize(network_architecture).weights_and_biases()
-print(len(weights))
-for matrix in weights:
-    print(matrix)
-
-print(len(biases))
-for matrix in biases:
-    print(matrix)
+predictions     = ForwardProp(weights, biases, d.Xtrain_norm).run()
+print("predictions are", predictions)
+# print(len(weights))
+# for matrix in weights:
+#     print(matrix)
+#
+# print(len(biases))
+# for matrix in biases:
+#     print(matrix)
 # print('Xtrain is a', type(d.Xtrain))
 # print('Xtrain.shape is', d.Xtrain.shape)
 # print('Xtrain is', d.Xtrain)
