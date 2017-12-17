@@ -16,13 +16,15 @@ class Loader:
         self.Xtest          = None
         self.Ytest          = None
 
+    # Normalizes input data to have mean 0 and variance 1
     def __norm(self, matrix):
-        # Normalizes input data to have mean 0 and variance 1
-        means               = np.mean(matrix, 0)
-        mean_zero_data      = matrix - means
-        standard_deviations = np.std(mean_zero_data, 0)
+        means                                 = np.mean(matrix, 0)
+        mean_zero_data                        = matrix - means
+        standard_deviations                   = np.std(mean_zero_data, 0)
+        normalized                            = mean_zero_data / standard_deviations
+        columns_with_zero_standard_devivation = np.where(standard_deviations == 0)[0]
 
-        return (matrix - means) / standard_deviations
+        return np.delete(normalized, columns_with_zero_standard_devivation, axis = 1)
 
     def normalize(self):
         self.Xtrain_norm = self.__norm(self.Xtrain)
