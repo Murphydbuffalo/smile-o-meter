@@ -13,7 +13,7 @@ class ForwardProp:
             Z = np.dot(self.weights[i], A)  + self.biases[i]
             A = self.__relu(Z)
 
-        return = self.__sigmoid(Z)
+        return self.__softmax(Z)
 
     def __relu(self, Z):
         # NOTE: np.maximum is NOT the same as np.max, which find the maximum value
@@ -22,7 +22,6 @@ class ForwardProp:
         # element and the provided second arg (0 in this case)
         return np.maximum(Z, 0)
 
-    # Really this should be softmax, because you are predicting between 3 classes
-    # Unhappy, neutral, and happy
-    def __sigmoid(self, Z):
-        return 1 / (1 + np.e ** -Z)
+    def __softmax(self, Z):
+        exponentials = np.exp(Z)
+        return exponentials / np.sum(exponentials)
