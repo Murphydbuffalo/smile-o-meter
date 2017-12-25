@@ -11,8 +11,7 @@ network_architecture = [
     d.Xtrain_norm.shape[0],
     5,
     3,
-    2,
-    1
+    3
 ]
 
 weights, biases = Initialize(network_architecture).weights_and_biases()

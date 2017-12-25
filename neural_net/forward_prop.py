@@ -13,7 +13,7 @@ class ForwardProp:
             Z = np.dot(self.weights[i], A)  + self.biases[i]
             A = self.__relu(Z)
 
-        return self.__softmax(Z)
+        return np.apply_along_axis(self.__softmax, 0, Z)
 
     def __relu(self, Z):
         # NOTE: np.maximum is NOT the same as np.max, which find the maximum value
@@ -22,6 +22,6 @@ class ForwardProp:
         # element and the provided second arg (0 in this case)
         return np.maximum(Z, 0)
 
-    def __softmax(self, Z):
-        exponentials = np.exp(Z)
+    def __softmax(self, v):
+        exponentials = np.exp(v)
         return exponentials / np.sum(exponentials)
