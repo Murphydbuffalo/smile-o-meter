@@ -2,6 +2,7 @@ import numpy as np
 from data.loader  import Loader
 from initialize   import Initialize
 from forward_prop import ForwardProp
+from cost         import Cost
 
 d = Loader()
 d.load()
@@ -16,7 +17,8 @@ network_architecture = [
 
 weights, biases = Initialize(network_architecture).weights_and_biases()
 predictions     = ForwardProp(weights, biases, d.Xtrain_norm).run()
-print("predictions are", predictions)
+c               = Cost(predictions, d.Ytrain).cross_entropy_loss()
+
 # NEXT STEPS:
 # Write out the normalized data to CSVs and write code to import those CSVs into
 # NumPy arrays. This will prevent you from having to generate this data every time
