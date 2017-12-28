@@ -9,12 +9,13 @@ class ForwardProp:
     def run(self):
         A = self.X
 
-        for i in range(0, len(self.weights)):
+        for i in range(len(self.weights)):
             Z = np.dot(self.weights[i], A)  + self.biases[i]
             A = self.__relu(Z)
 
         return np.apply_along_axis(self.__softmax, 0, Z)
 
+    # TODO: Try softplus to see if it performs noticeably better or worse.
     def __relu(self, Z):
         # NOTE: np.maximum is NOT the same as np.max, which find the maximum value
         # in the matrix (or in each row/column of the matrix).
