@@ -8,8 +8,7 @@ class Cost:
     def cross_entropy_loss(self):
         m     = len(self.labels)
         total = 0
-        # totals = [-np.log(self.predictions[self.labels[i]][i]) for i in range(m)]
-        # return np.sum(totals) / m
+
         for i in range(0, m):
             label       = self.labels[i]
             confidence  = self.predictions[label][i]
@@ -17,11 +16,10 @@ class Cost:
 
         return total / m
 
-    # label       =         1
-    # predictions = [0.12, 0.80, 0.08]
-    # -np.log(predictions[label])
-    # cost = np.sum([
-    #     -np.log(0.12),
-    #     -np.log(0.80),
-    #     -np.log(0.08)
-    # ])
+    # TODO: See if one of these performs better:
+    # totals = [-np.log(self.predictions[self.labels[i]][i]) for i in range(m)]
+    # return np.sum(totals) / m
+    #
+    # Haven't tested this out...
+    # a = np.zip(labels, predictions)
+    # np.apply_along_axis(self.__loss_for_example, 0, a)
