@@ -2,9 +2,11 @@ import numpy as np
 
 class ForwardProp:
     def __init__(self, weights, biases, X):
-        self.weights = weights
-        self.biases  = biases
-        self.X       = X
+        self.weights               = weights
+        self.biases                = biases
+        self.X                     = X
+        self.linear_activations    = []
+        self.nonlinear_activations = [X]
 
     def run(self):
         A = self.X
@@ -13,7 +15,13 @@ class ForwardProp:
             Z = np.dot(self.weights[i], A)  + self.biases[i]
             A = self.__relu(Z)
 
-        return np.apply_along_axis(self.__softmax, 0, Z)
+            self.linear_activations.append(Z)
+            self.nonlinear_activations.append(A)
+
+        final_activation               = np.atleast_2d(np.apply_along_axis(self.__softmax, 0, Z))
+        self.nonlinear_activations[-1] = final_activation
+
+        return [final_activation, self.linear_activations, self.nonlinear_activations]
 
     # TODO: Try softplus to see if it performs noticeably better or worse.
     def __relu(self, Z):
