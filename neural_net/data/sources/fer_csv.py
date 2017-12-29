@@ -20,12 +20,12 @@ class FER_CSV:
         # Need to convert from the FER labels of:      0 = Angry,   1 = Disgust, 2 = Fear, 3 = Happy, 4 = Sad, 5 = Surprise, 6 = Neutral
         fer_label = int(row['emotion'])
 
-        if fer_label == 3:
-            label = 1
-        elif fer_label < 5:
-            label = 2
-        else:
+        if fer_label == 6:
             label = 0
+        elif fer_label == 3:
+            label = 1
+        else:
+            label = 2
 
         return label
 
