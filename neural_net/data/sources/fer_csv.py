@@ -50,7 +50,7 @@ class FER_CSV:
             label     = self.__label(row)
             pixels    = self.__pixels(row)
 
-            if print_progress == True and index % 100 == 0:
+            if print_progress == True and index % 500 == 0:
                 print("partition is", partition)
                 print("label is", label)
                 print("shape of pixels is", pixels.shape)
