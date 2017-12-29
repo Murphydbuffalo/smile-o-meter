@@ -18,10 +18,9 @@ class ForwardProp:
             self.linear_activations.append(Z)
             self.nonlinear_activations.append(A)
 
-        final_activation               = np.atleast_2d(np.apply_along_axis(self.__softmax, 0, Z))
-        self.nonlinear_activations[-1] = final_activation
+        self.nonlinear_activations[-1] = self.__softmax_activation(Z)
 
-        return [final_activation, self.linear_activations, self.nonlinear_activations]
+        return [self.linear_activations, self.nonlinear_activations]
 
     # TODO: Try softplus to see if it performs noticeably better or worse.
     def __relu(self, Z):
@@ -34,3 +33,6 @@ class ForwardProp:
     def __softmax(self, v):
         exponentials = np.exp(v)
         return exponentials / np.sum(exponentials)
+
+    def __softmax_activation(self, Z):
+        return np.atleast_2d(np.apply_along_axis(self.__softmax, 0, Z))

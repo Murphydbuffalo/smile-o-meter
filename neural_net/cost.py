@@ -2,8 +2,7 @@ import numpy as np
 
 class Cost:
     def __init__(self, predictions, labels):
-        # take only the softmax output for the class of the label
-        self.predictions = np.choose(labels, predictions)
+        self.predictions = predictions
         self.labels      = labels
         self.m           = float(labels.shape[1])
 

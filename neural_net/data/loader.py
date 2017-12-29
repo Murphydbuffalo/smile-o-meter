@@ -21,7 +21,6 @@ class Loader:
         self.Xdev_norm   = self.__norm(self.Xdev)
         self.Xtest_norm  = self.__norm(self.Xtest)
 
-    # Need to filter out labels for bad data examples
     def load(self):
         for data_source in self.data_sources:
             data_source.load_data(self.print_progress)
