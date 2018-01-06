@@ -6,7 +6,7 @@ class ForwardProp:
         self.biases                = biases
         self.X                     = X
         self.linear_activations    = []
-        self.nonlinear_activations = []
+        self.nonlinear_activations = [X]
 
     def run(self):
         A = self.X
