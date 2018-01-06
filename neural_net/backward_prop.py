@@ -15,15 +15,15 @@ class BackwardProp:
 
         for i in range(1, len(self.A)):
             if i == 1:
-                d_cost_d_softmax_z = self.__d_cost_d_softmax() * self.__d_softmax_d_z() # 3 x m
-                d_z_d_a            = self.__d_z_d_a(-i).dot(d_cost_d_softmax_z)         # 3 x 3 * 3 x m = 3 x m
-                dw                 = d_cost_d_softmax_z.dot(self.__d_z_d_w(-i).T)       # 3 x m * m x 3 = 3 x 3
+                d_cost_d_softmax_z = self.__d_cost_d_softmax() * self.__d_softmax_d_z()                       # 3 x m
+                d_z_d_a            = self.__d_z_d_a(-i).dot(d_cost_d_softmax_z)                               # 3 x 3 * 3 x m = 3 x m
+                dw                 = d_cost_d_softmax_z.dot(self.__d_z_d_w(-i).T)                             # 3 x m * m x 3 = 3 x 3
                 db                 = np.sum(d_cost_d_softmax_z, axis = 1, keepdims = True) * self.__d_z_d_b() # 3 x 1
             else:
-                d_relu_d_z = self.__d_relu_d_z(-i) * d_z_d_a      # 3 x m elementwise* 3 x m = 3 x m for layer 2
-                dw         = d_relu_d_z.dot(self.__d_z_d_w(-i).T) # 3 x m * m x 5 = 3 x 5 for layer 2
-                db         = np.sum(d_relu_d_z, axis = 1, keepdims = True) * self.__d_z_d_b()
-                d_z_d_a    = self.__d_z_d_a(-i).T.dot(d_relu_d_z) # 5 x 3 *  3 x m =  5 x m
+                d_relu_d_z = self.__d_relu_d_z(-i) * d_z_d_a                                  # 3 x m elementwise* 3 x m = 3 x m for layer 2
+                dw         = d_relu_d_z.dot(self.__d_z_d_w(-i).T)                             # 3 x m * m x 5 = 3 x 5 for layer 2
+                db         = np.sum(d_relu_d_z, axis = 1, keepdims = True) * self.__d_z_d_b() # 3 x 1 for layer 2
+                d_z_d_a    = self.__d_z_d_a(-i).T.dot(d_relu_d_z)                             # 5 x 3 *  3 x m =  5 x m for layer 2
 
             weight_gradients.append(dw)
             bias_gradients.append(db)
