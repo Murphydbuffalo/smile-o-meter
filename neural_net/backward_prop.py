@@ -30,10 +30,8 @@ class BackwardProp:
 
         return [list(reversed(weight_gradients)), list(reversed(bias_gradients))]
 
-    # TODO: Fix this. Need to define softmax as a function that takes both Z and
-    # Y as inputs, and the derivative should reflect this.
     def __d_cost_d_softmax(self):
-        return -1 / self.softmax_output # 3 x m
+        return -self.labels / self.softmax_output # 3 x m
 
     def __d_softmax_d_z(self):
         return self.softmax_output * (1 - self.softmax_output) # 3 x m
