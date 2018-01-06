@@ -28,7 +28,7 @@ class BackwardProp:
             weight_gradients.append(dw)
             bias_gradients.append(db)
 
-        return [weight_gradients.reverse(), bias_gradients.reverse()]
+        return [list(reversed(weight_gradients)), list(reversed(bias_gradients))]
 
     # TODO: Fix this. Need to define softmax as a function that takes both Z and
     # Y as inputs, and the derivative should reflect this.
