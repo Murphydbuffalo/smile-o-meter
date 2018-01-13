@@ -28,7 +28,7 @@ class BackwardProp:
             weight_gradients.append(dw)
             bias_gradients.append(db)
 
-        return [list(reversed(weight_gradients)), list(reversed(bias_gradients))]
+        return [np.array(list(reversed(weight_gradients))), np.array(list(reversed(bias_gradients)))]
 
     def __d_cost_d_softmax(self):
         return -self.labels / self.softmax_output # 3 x m
