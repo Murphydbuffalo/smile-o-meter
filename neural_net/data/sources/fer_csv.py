@@ -3,7 +3,7 @@ import csv
 import os
 
 class FER_CSV:
-    filename = './neural_net/data/sources/fer2013.csv'
+    filename = './data/sources/fer2013.csv'
 
     def __init__(self):
         self.csv    = csv.DictReader(open(self.filename))
