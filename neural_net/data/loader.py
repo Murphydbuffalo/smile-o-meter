@@ -21,6 +21,8 @@ class Loader:
         self.Xdev_norm   = self.__norm(self.Xdev)
         self.Xtest_norm  = self.__norm(self.Xtest)
 
+        return self
+
     def load(self):
         for data_source in self.data_sources:
             data_source.load_data(self.print_progress)
@@ -55,6 +57,8 @@ class Loader:
         Xtest_no_bad_data, Ytest_no_bad_data = self.__remove_zero_standard_deviation_examples(self.Xtest, self.Ytest)
         self.Xtest = Xtest_no_bad_data
         self.Ytest = Ytest_no_bad_data
+
+        return self
 
     # Normalizes input data to have mean 0 and variance 1
     def __norm(self, matrix):
