@@ -13,7 +13,7 @@ class ForwardProp:
 
         for i in range(len(self.weights)):
             Z = np.dot(self.weights[i], A)  + self.biases[i]
-            Z[Z > 10 ** 300] = 10 ** 300
+            Z[Z > 10 ** 300] = 10 ** 300 # Set near `inf` values to a very large number
             A = self.__relu(Z)
 
             self.linear_activations.append(Z)
