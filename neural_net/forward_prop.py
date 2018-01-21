@@ -31,7 +31,7 @@ class ForwardProp:
         return np.maximum(Z, 0)
 
     def __softmax(self, v):
-        exponentials = np.exp(v - np.max(v))
+        exponentials = np.exp(v - np.max(v, axis = 0))
         return exponentials / np.sum(exponentials)
 
     def __softmax_activation(self, Z):
