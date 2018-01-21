@@ -19,7 +19,7 @@ class Initialize:
             weights.append(self.__initialize_weights(num_inputs, num_outputs))
             biases.append(self.__initialize_biases(num_outputs))
 
-        return [weights, biases]
+        return [np.array(weights), np.array(biases)]
 
     def __initialize_weights(self, num_inputs, num_outputs):
         if self.algorithm == 'xavier':

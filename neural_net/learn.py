@@ -33,13 +33,18 @@ for i in range(1000):
     weights                          = updated_weights
     biases                           = updated_biases
 
-    if (i % 10) == 0:
+    if (i % 100) == 0:
+        print("Iteration #", i)
         print("Cost is", c)
 
 end_time     = time()
 seconds      = timedelta(seconds=int(end_time - start_time))
 time_elapsed = datetime(1,1,1) + seconds
 print(f"Total training was {time_elapsed.day - 1}:{time_elapsed.hour}:{time_elapsed.minute}:{time_elapsed.second}")
+
+print("Saving learned parameters...")
+np.save('learned_weights', weights)
+np.save('learned_biases', biases)
 
 pyplot.ylabel('Cost')
 pyplot.xlabel('Iteration')
