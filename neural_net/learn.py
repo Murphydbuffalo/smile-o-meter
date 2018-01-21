@@ -1,38 +1,45 @@
 import imp
 import numpy as np
-import time
 import data.loader
 import initialize
 import forward_prop
 import cost
 import backward_prop
-import gradient_check
+import optimize
 import matplotlib.pyplot as pyplot
+from time import time
+from datetime import datetime, timedelta
 
-Loader        = data.loader.Loader
-Initialize    = initialize.Initialize
-ForwardProp   = forward_prop.ForwardProp
-Cost          = cost.Cost
-BackwardProp  = backward_prop.BackwardProp
-GradientCheck = gradient_check.GradientCheck
+Loader          = data.loader.Loader
+Initialize      = initialize.Initialize
+ForwardProp     = forward_prop.ForwardProp
+Cost            = cost.Cost
+BackwardProp    = backward_prop.BackwardProp
+GradientDescent = optimize.GradientDescent
 
 d                    = Loader().load().normalize()
 network_architecture = [d.Xtrain_norm.shape[0], 5, 3, 3]
 weights, biases      = Initialize(network_architecture).weights_and_biases()
-learning_rate        = 0.0000000025
 costs                = []
-start_time           = time.time()
+start_time           = time()
 
 for i in range(1000):
     Z, A = ForwardProp(weights, biases, d.Xtrain_norm).run()
     c    = Cost(A[-1], d.Ytrain).cross_entropy_loss()
     costs.append(c)
+
     weight_gradients, bias_gradients = BackwardProp(weights, Z, A, d.Ytrain).run()
-    weights                          = weights - (learning_rate * weight_gradients)
-    biases                           = biases  - (learning_rate * bias_gradients)
-    end_time                         = time.time()
-    
-print("Total training time in seconds:", end_time - start_time)
+    updated_weights, updated_biases  = GradientDescent(weights, biases, weight_gradients, bias_gradients).updated_parameters()
+    weights                          = updated_weights
+    biases                           = updated_biases
+
+    if (i % 10) == 0:
+        print("Cost is", c)
+
+end_time     = time()
+seconds      = timedelta(seconds=int(end_time - start_time))
+time_elapsed = datetime(1,1,1) + seconds
+print(f"Total training was {time_elapsed.day - 1}:{time_elapsed.hour}:{time_elapsed.minute}:{time_elapsed.second}")
 
 pyplot.ylabel('Cost')
 pyplot.xlabel('Iteration')
