@@ -3,3 +3,5 @@ NOTES.markdown
 **/__pycache__
 **/*.pyc
 **/*.csv
+neural_net/warning_example.py
+
