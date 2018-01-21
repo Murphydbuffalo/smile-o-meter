@@ -22,8 +22,8 @@ for i in range(10_000):
     Z, A                             = ForwardProp(weights, biases, d.Xtrain_norm).run()
     c                                = Cost(A[-1], d.Ytrain).cross_entropy_loss()
     weight_gradients, bias_gradients = BackwardProp(weights, Z, A, d.Ytrain).run()
-    weights                          = weights - (0.0000025 * weight_gradients)
-    biases                           = biases  - (0.0000025 * bias_gradients)
+    weights                          = weights - (0.0000000025 * weight_gradients)
+    biases                           = biases  - (0.0000000025 * bias_gradients)
     if (i % 10) == 0:
         print("Iteration #", i + 1)
         print("Cost:", c)
