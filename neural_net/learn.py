@@ -1,4 +1,3 @@
-import imp
 import numpy as np
 import data.loader
 import initialize
@@ -9,6 +8,7 @@ import optimize
 import matplotlib.pyplot as pyplot
 from time import time
 from datetime import datetime, timedelta
+import gradient_check
 
 Loader          = data.loader.Loader
 Initialize      = initialize.Initialize
@@ -29,13 +29,16 @@ for i in range(1000):
     costs.append(c)
 
     weight_gradients, bias_gradients = BackwardProp(weights, Z, A, d.Ytrain).run()
-    updated_weights, updated_biases  = GradientDescent(weights, biases, weight_gradients, bias_gradients).updated_parameters()
-    weights                          = updated_weights
-    biases                           = updated_biases
 
     if (i % 100) == 0:
         print("Iteration #", i)
         print("Cost is", c)
+        check = gradient_check.GradientCheck(weights, biases, weight_gradients, d.Xtrain_norm, d.Ytrain)
+        print("Are the analytic gradients about the same as the numeric gradients?", check.run())
+
+    updated_weights, updated_biases  = GradientDescent(weights, biases, weight_gradients, bias_gradients).updated_parameters()
+    weights                          = updated_weights
+    biases                           = updated_biases
 
 end_time     = time()
 seconds      = timedelta(seconds=int(end_time - start_time))
