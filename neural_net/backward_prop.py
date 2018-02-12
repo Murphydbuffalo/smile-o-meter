@@ -5,8 +5,9 @@ class BackwardProp:
         self.weights        = weights # [ 5 x 2304, 3 x 5, 3 x 3 ]
         self.Z              = Z       # Z = W_current_layer * A_previous_layer + B_current_layer and A = activation(Z) are lists with L (# of layers) elements:
         self.A              = A       # [ 5 x m (hidden), 3 x m (hidden), 3 x m (output) ]
-        self.labels         = labels  # 1 x m
-        self.softmax_output = A[-1]   # 1 x m
+        self.labels         = labels  # 3 x m
+        self.softmax_output = A[-1]   # 3 x m
+        self.m              = labels.shape[1]
 
     def run(self):
         # these should have the following shapes (a derivative for each weight/bias)
@@ -15,7 +16,7 @@ class BackwardProp:
 
         for i in range(1, len(self.A)):
             if i == 1:
-                d_cost_d_softmax_z = self.__d_cost_d_softmax() * self.__d_softmax_d_z()                       # 3 x m
+                d_cost_d_softmax_z = self.__d_cost_d_z()                                                      # 3 x m
                 d_z_d_a            = self.__d_z_d_a(-i).dot(d_cost_d_softmax_z)                               # 3 x 3 * 3 x m = 3 x m
                 dw                 = d_cost_d_softmax_z.dot(self.__d_z_d_w(-i).T)                             # 3 x m * m x 3 = 3 x 3
                 db                 = np.sum(d_cost_d_softmax_z, axis = 1, keepdims = True) * self.__d_z_d_b() # 3 x 1
@@ -30,11 +31,8 @@ class BackwardProp:
 
         return [np.array(list(reversed(weight_gradients))), np.array(list(reversed(bias_gradients)))]
 
-    def __d_cost_d_softmax(self):
-        return -self.labels / self.softmax_output # 3 x m
-
-    def __d_softmax_d_z(self):
-        return self.softmax_output * (1 - self.softmax_output) # 3 x m
+    def __d_cost_d_z(self):
+        return (self.softmax_output - self.labels) / self.m
 
     def __d_relu_d_z(self, layer):
         # No ReLU in the first layer
