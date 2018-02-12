@@ -1,21 +1,17 @@
-import numpy as np
-import data.loader
-import initialize
-import forward_prop
-import cost
-import backward_prop
-import optimize
+import numpy             as np
 import matplotlib.pyplot as pyplot
-from time import time
-from datetime import datetime, timedelta
-import gradient_check
 
-Loader          = data.loader.Loader
-Initialize      = initialize.Initialize
-ForwardProp     = forward_prop.ForwardProp
-Cost            = cost.Cost
-BackwardProp    = backward_prop.BackwardProp
-GradientDescent = optimize.GradientDescent
+from time     import time
+from datetime import datetime, timedelta
+from sys      import argv
+
+from data.loader    import Loader
+from initialize     import Initialize
+from forward_prop   import ForwardProp
+from cost           import Cost
+from backward_prop  import BackwardProp
+from optimize       import GradientDescent
+from gradient_check import GradientCheck
 
 d                    = Loader().load().normalize()
 network_architecture = [d.Xtrain_norm.shape[0], 5, 3, 3]
@@ -33,7 +29,7 @@ for i in range(1000):
     if (i % 100) == 0:
         print("Iteration #", i)
         print("Cost is", c)
-        check = gradient_check.GradientCheck(weights, biases, weight_gradients, d.Xtrain_norm, d.Ytrain)
+        check = GradientCheck(weights, biases, weight_gradients, d.Xtrain_norm, d.Ytrain)
         print("Are the analytic gradients about the same as the numeric gradients?", check.run())
 
     updated_weights, updated_biases  = GradientDescent(weights, biases, weight_gradients, bias_gradients).updated_parameters()
