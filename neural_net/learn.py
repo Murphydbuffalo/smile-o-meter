@@ -29,8 +29,10 @@ for i in range(1000):
     if (i % 100) == 0:
         print("Iteration #", i)
         print("Cost is", c)
-        check = GradientCheck(weights, biases, weight_gradients, d.Xtrain_norm, d.Ytrain)
-        print("Are the analytic gradients about the same as the numeric gradients?", check.run())
+
+        if len(argv) > 1 and argv[1] == '--check-gradients':
+            check = GradientCheck(weights, biases, weight_gradients, d.Xtrain_norm, d.Ytrain)
+            print("Are the analytic gradients about the same as the numeric gradients?", check.run())
 
     updated_weights, updated_biases  = GradientDescent(weights, biases, weight_gradients, bias_gradients).updated_parameters()
     weights                          = updated_weights
