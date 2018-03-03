@@ -19,7 +19,7 @@ weights, biases      = Initialize(network_architecture).weights_and_biases()
 costs                = []
 start_time           = time()
 
-for i in range(1000):
+for i in range(10_000):
     Z, A = ForwardProp(weights, biases, d.Xtrain_norm).run()
     c    = Cost(A[-1], d.Ytrain).cross_entropy_loss()
     costs.append(c)
