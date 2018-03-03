@@ -35,6 +35,9 @@ class GradientCheck:
 
         # Skip weights connecting input layer to 1st hidden layer because there
         # are so many it takes hours to calculate them all.
+        # Not to mention, if you know the second-to-last layer's gradients are
+        # correct, then you can confident that all hidden layer gradients are correct
+        # because they are calculated the same way.
         for layer in range(1, len(weights)):
             for column in range(weights[layer].shape[0]):
                 for row in range(weights[layer].shape[1]):
@@ -51,6 +54,6 @@ class GradientCheck:
                     cost_minus = Cost(Aminus[-1], self.Y).cross_entropy_loss()
 
                     numeric_gradients[layer][column][row] = (cost_plus - cost_minus) / (2 * self.epsilon)
-                    weights[layer][column][row] = original_weight # paranoia
+                    weights[layer][column][row]           = original_weight # paranoia
 
         return numeric_gradients
