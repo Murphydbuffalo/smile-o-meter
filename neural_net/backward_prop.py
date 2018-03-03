@@ -35,7 +35,7 @@ class BackwardProp:
         return (self.softmax_output - self.labels) / self.m
 
     def __d_relu_d_z(self, layer):
-        # No ReLU in the first layer
+        # No ReLU in the output layer
         # Z[-2] ->    3 x m
         # Z[-3] ->    5 x m
         return np.where(self.Z[layer] > 0, 1, 0)
