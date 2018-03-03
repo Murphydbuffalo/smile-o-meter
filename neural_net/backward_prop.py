@@ -16,15 +16,12 @@ class BackwardProp:
 
         for i in range(1, len(self.A)):
             if i == 1:
-                d_cost_d_softmax_z = self.__d_cost_d_z()                                                      # 3 x m
-                d_z_d_a            = self.__d_z_d_a(-i).dot(d_cost_d_softmax_z)                               # 3 x 3 * 3 x m = 3 x m
-                dw                 = d_cost_d_softmax_z.dot(self.__d_z_d_w(-i).T)                             # 3 x m * m x 3 = 3 x 3
-                db                 = np.sum(d_cost_d_softmax_z, axis = 1, keepdims = True) * self.__d_z_d_b() # 3 x 1
+                dz = self.__d_cost_d_z()
             else:
-                d_relu_d_z = self.__d_relu_d_z(-i) * d_z_d_a                                  # 3 x m elementwise* 3 x m = 3 x m for layer 2
-                dw         = d_relu_d_z.dot(self.__d_z_d_w(-i).T)                             # 3 x m * m x 5 = 3 x 5 for layer 2
-                db         = np.sum(d_relu_d_z, axis = 1, keepdims = True) * self.__d_z_d_b() # 3 x 1 for layer 2
-                d_z_d_a    = self.__d_z_d_a(-i).T.dot(d_relu_d_z)                             # 5 x 3 *  3 x m =  5 x m for layer 2
+                dz = self.__d_z_d_a(-i).T.dot(dz) * self.__d_relu_d_z(-i)
+
+            dw = dz.dot(self.__d_z_d_w(-i).T)
+            db = np.sum(dz, axis = 1, keepdims = True) * self.__d_z_d_b()
 
             weight_gradients.append(dw)
             bias_gradients.append(db)
@@ -32,7 +29,7 @@ class BackwardProp:
         return [np.array(list(reversed(weight_gradients))), np.array(list(reversed(bias_gradients)))]
 
     def __d_cost_d_z(self):
-        return (self.softmax_output - self.labels) / self.m
+        return (self.softmax_output - self.labels) / self.m # 3 x m
 
     def __d_relu_d_z(self, layer):
         # No ReLU in the output layer
@@ -47,12 +44,11 @@ class BackwardProp:
         # A[-4] ->    2304 x m
         return self.A[layer - 1]
 
-    # Partial derivative of a layer's Z with respect to the previous layer's A
     def __d_z_d_a(self, layer):
         # W[-1] ->    3 x 3
         # W[-2] ->    3 x 5
         # W[-3] ->    5 x 2304
-        return self.weights[layer]
+        return self.weights[layer + 1]
 
     def __d_z_d_b(self):
         return 1.0
