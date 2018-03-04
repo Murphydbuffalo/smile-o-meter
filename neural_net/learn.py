@@ -19,10 +19,10 @@ weights, biases      = Initialize(network_architecture).weights_and_biases()
 costs                = []
 start_time           = time()
 
-momentum_weight_average = 0
-momentum_bias_average   = 0
-rms_prop_weight_average = 0
-rms_prop_bias_average   = 0
+momentum_weight_average = np.zeros(weights.shape)
+momentum_bias_average   = np.zeros(biases.shape)
+rms_prop_weight_average = np.zeros(weights.shape)
+rms_prop_bias_average   = np.zeros(biases.shape)
 
 for i in range(10_000):
     Z, A = ForwardProp(weights, biases, d.Xtrain_norm).run()
@@ -30,14 +30,6 @@ for i in range(10_000):
     costs.append(c)
 
     weight_gradients, bias_gradients = BackwardProp(weights, Z, A, d.Ytrain).run()
-
-    if (i % 100) == 0:
-        print("Iteration #", i)
-        print("Cost is", c)
-
-        if len(argv) > 1 and argv[1] == '--check-gradients':
-            check = GradientCheck(weights, biases, weight_gradients, d.Xtrain_norm, d.Ytrain)
-            print("Are the analytic gradients about the same as the numeric gradients?", check.run())
 
     optimizer = Adam(
         weights,
@@ -58,6 +50,21 @@ for i in range(10_000):
         updated_rms_prop_weight_average,
         updated_rms_prop_bias_average
     ] = optimizer.updated_parameters()
+
+    if (i % 100) == 0:
+        print("Iteration #", i)
+        print("Cost is", c)
+
+        # print("momentum_weight_average[2]:", momentum_weight_average[2])
+        # print("\n\n")
+        # print("updated_momentum_weight_average[2]:", updated_momentum_weight_average[2])
+        # print("\n\n")
+        # print("rms_prop_weight_average[2]:", rms_prop_weight_average[2])
+        # print("\n\n")
+        # print("updated_rms_prop_weight_average[2]:", updated_rms_prop_weight_average[2])
+        if len(argv) > 1 and argv[1] == '--check-gradients':
+            check = GradientCheck(weights, biases, weight_gradients, d.Xtrain_norm, d.Ytrain)
+            print("Are the analytic gradients about the same as the numeric gradients?", check.run())
 
     weights                 = updated_weights
     biases                  = updated_biases
