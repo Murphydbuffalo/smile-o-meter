@@ -19,7 +19,7 @@ class Adam:
     learning_rate = 0.025
     momentum_rate = 0.9
     rms_prop_rate = 0.999
-    epsilon       = 0.0000001
+    epsilon       = 0.00000001
 
     def __init__(self, weights, biases, weight_gradients, bias_gradients, momentum_weight_average, momentum_bias_average, rms_prop_weight_average, rms_prop_bias_average):
         self.weights                 = weights
