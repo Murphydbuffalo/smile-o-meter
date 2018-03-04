@@ -10,7 +10,7 @@ from initialize     import Initialize
 from forward_prop   import ForwardProp
 from cost           import Cost
 from backward_prop  import BackwardProp
-from optimize       import GradientDescent
+from optimize       import Adam
 from gradient_check import GradientCheck
 
 d                    = Loader().load().normalize()
@@ -18,6 +18,11 @@ network_architecture = [d.Xtrain_norm.shape[0], 5, 3, 3]
 weights, biases      = Initialize(network_architecture).weights_and_biases()
 costs                = []
 start_time           = time()
+
+momentum_weight_average = 0
+momentum_bias_average   = 0
+rms_prop_weight_average = 0
+rms_prop_bias_average   = 0
 
 for i in range(10_000):
     Z, A = ForwardProp(weights, biases, d.Xtrain_norm).run()
@@ -34,9 +39,32 @@ for i in range(10_000):
             check = GradientCheck(weights, biases, weight_gradients, d.Xtrain_norm, d.Ytrain)
             print("Are the analytic gradients about the same as the numeric gradients?", check.run())
 
-    updated_weights, updated_biases  = GradientDescent(weights, biases, weight_gradients, bias_gradients).updated_parameters()
-    weights                          = updated_weights
-    biases                           = updated_biases
+    optimizer = Adam(
+        weights,
+        biases,
+        weight_gradients,
+        bias_gradients,
+        momentum_weight_average,
+        momentum_bias_average,
+        rms_prop_weight_average,
+        rms_prop_bias_average
+    )
+
+    [
+        updated_weights,
+        updated_biases,
+        updated_momentum_weight_average,
+        updated_momentum_bias_average,
+        updated_rms_prop_weight_average,
+        updated_rms_prop_bias_average
+    ] = optimizer.updated_parameters()
+
+    weights                 = updated_weights
+    biases                  = updated_biases
+    momentum_weight_average = updated_momentum_weight_average
+    momentum_bias_average   = updated_momentum_bias_average
+    rms_prop_weight_average = updated_rms_prop_weight_average
+    rms_prop_bias_average   = updated_rms_prop_bias_average
 
 end_time     = time()
 seconds      = timedelta(seconds=int(end_time - start_time))
