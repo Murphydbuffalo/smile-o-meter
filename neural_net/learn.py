@@ -27,10 +27,6 @@ rms_prop_bias_average   = np.zeros(biases.shape)
 for i in range(10_000):
     Z, A = ForwardProp(weights, biases, d.Xtrain_norm).run()
     c    = Cost(A[-1], d.Ytrain).cross_entropy_loss()
-
-    if (len(costs) > 0 and costs[-1] < c):
-        print("~~~~~ Cost has increased ~~~~~")
-
     costs.append(c)
 
     weight_gradients, bias_gradients = BackwardProp(weights, Z, A, d.Ytrain).run()
@@ -59,7 +55,7 @@ for i in range(10_000):
         print("Iteration #", i)
         print("Cost is", c)
 
-        if len(argv) > 1 and argv[1] == '--check-gradients':
+        if len(argv) > 1 and argv[1] == '--check-gradients' and i % 100 == 0:
             check = GradientCheck(weights, biases, weight_gradients, d.Xtrain_norm, d.Ytrain)
             print("Are the analytic gradients about the same as the numeric gradients?", check.run())
 
