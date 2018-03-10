@@ -9,8 +9,6 @@ class FER_CSV:
         self.csv    = csv.DictReader(open(self.filename))
         self.Xtrain = []
         self.Ytrain = np.array([[],[],[]]) # Our Y matrices will have shape 3 x m (we have 3 classes)
-        self.Xdev   = []
-        self.Ydev   = np.array([[],[],[]])
         self.Xtest  = []
         self.Ytest  = np.array([[],[],[]])
 
@@ -33,15 +31,12 @@ class FER_CSV:
         return np.array(row['pixels'].split(), 'int')
 
     def __add_data(self, label, pixels, partition):
-        if partition == 'Training':
-            self.Xtrain.append(pixels)
-            self.Ytrain = np.column_stack((self.Ytrain, label))
-        elif partition == 'PrivateTest':
-            self.Xdev.append(pixels)
-            self.Ydev = np.column_stack((self.Ydev, label))
-        elif partition == 'PublicTest':
+        if partition == 'PublicTest':
             self.Xtest.append(pixels)
             self.Ytest = np.column_stack((self.Ytest, label))
+        else:
+            self.Xtrain.append(pixels)
+            self.Ytrain = np.column_stack((self.Ytrain, label))
 
     def load_data(self, print_progress = False):
         for index, row in enumerate(self.csv):
@@ -59,7 +54,6 @@ class FER_CSV:
 
 
         self.Xtrain = np.array(self.Xtrain).T
-        self.Xdev   = np.array(self.Xdev).T
         self.Xtest  = np.array(self.Xtest).T
 
         return True

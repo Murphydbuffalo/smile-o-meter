@@ -11,14 +11,11 @@ class Loader:
         self.print_progress = print_progress
         self.Xtrain         = None
         self.Ytrain         = None
-        self.Xdev           = None
-        self.Ydev           = None
         self.Xtest          = None
         self.Ytest          = None
 
     def normalize(self):
         self.Xtrain_norm = self.__norm(self.Xtrain)
-        self.Xdev_norm   = self.__norm(self.Xdev)
         self.Xtest_norm  = self.__norm(self.Xtest)
 
         return self
@@ -31,17 +28,11 @@ class Loader:
                 self.Xtrain = data_source.Xtrain
                 self.Ytrain = data_source.Ytrain
 
-                self.Xdev = data_source.Xdev
-                self.Ydev = data_source.Ydev
-
                 self.Xtest = data_source.Xtest
                 self.Ytest = data_source.Ytest
             else:
                 self.Xtrain = np.column_stack((self.Xtrain, data_source.Xtrain))
                 self.Ytrain = np.column_stack((self.Ytrain, data_source.Ytrain))
-
-                self.Xdev = np.column_stack((self.Xdev, data_source.Xdev))
-                self.Ydev = np.column_stack((self.Ydev, data_source.Ydev))
 
                 self.Xtest = np.column_stack((self.Xtest, data_source.Xtest))
                 self.Ytest = np.column_stack((self.Ytest, data_source.Ytest))
@@ -49,10 +40,6 @@ class Loader:
         Xtrain_no_bad_data, Ytrain_no_bad_data = self.__remove_zero_standard_deviation_examples(self.Xtrain, self.Ytrain)
         self.Xtrain = Xtrain_no_bad_data
         self.Ytrain = Ytrain_no_bad_data
-
-        Xdev_no_bad_data, Ydev_no_bad_data = self.__remove_zero_standard_deviation_examples(self.Xdev, self.Ydev)
-        self.Xdev = Xdev_no_bad_data
-        self.Ydev = Ydev_no_bad_data
 
         Xtest_no_bad_data, Ytest_no_bad_data = self.__remove_zero_standard_deviation_examples(self.Xtest, self.Ytest)
         self.Xtest = Xtest_no_bad_data
