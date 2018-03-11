@@ -16,7 +16,7 @@ class GradientDescent:
         return [updated_weights, updated_biases]
 
 class Adam:
-    learning_rate = 0.001
+    learning_rate = 0.0005
     momentum_rate = 0.9
     rms_prop_rate = 0.999
     epsilon       = 0.00000001
