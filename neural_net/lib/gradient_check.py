@@ -1,6 +1,6 @@
 import numpy as np
-from forward_prop  import ForwardProp
-from cost          import Cost
+from lib.forward_prop  import ForwardProp
+from lib.cost          import Cost
 
 class GradientCheck:
     def __init__(self, weights, biases, weight_gradients, X, Y):

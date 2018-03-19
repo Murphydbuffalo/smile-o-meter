@@ -1,8 +1,8 @@
 import numpy as np
 
-from data.loader  import Loader
-from forward_prop import ForwardProp
-from cost         import Cost
+from lib.data.loader  import Loader
+from lib.forward_prop import ForwardProp
+from lib.cost         import Cost
 
 d       = Loader().load().normalize()
 X_test  = d.Xtest_norm

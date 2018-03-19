@@ -5,13 +5,13 @@ from time     import time
 from datetime import datetime, timedelta
 from sys      import argv
 
-from data.loader    import Loader
-from initialize     import Initialize
-from forward_prop   import ForwardProp
-from cost           import Cost
-from backward_prop  import BackwardProp
-from optimize       import Adam
-from gradient_check import GradientCheck
+from lib.data.loader    import Loader
+from lib.initialize     import Initialize
+from lib.forward_prop   import ForwardProp
+from lib.cost           import Cost
+from lib.backward_prop  import BackwardProp
+from lib.optimize       import Adam
+from lib.gradient_check import GradientCheck
 
 d                    = Loader().load().normalize()
 network_architecture = [d.Xtrain_norm.shape[0], 100, 10, 3]

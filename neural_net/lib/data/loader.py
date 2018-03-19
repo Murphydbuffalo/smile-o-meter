@@ -1,5 +1,5 @@
 import numpy as np
-from data.sources.fer_csv import FER_CSV
+from lib.data.sources.fer_csv import FER_CSV
 
 class Loader:
     max_num_pixels = 2304
