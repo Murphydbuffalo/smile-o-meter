@@ -29,7 +29,7 @@ for i in range(m):
 
 total_predictions = correct_predictions + incorrect_predictions
 
-print("m:", m)
-print("total_predictions:", total_predictions)
-print("correct_predictions:", correct_predictions)
+print("m:",                     m)
+print("total_predictions:",     total_predictions)
+print("correct_predictions:",   correct_predictions)
 print("incorrect_predictions:", incorrect_predictions)
