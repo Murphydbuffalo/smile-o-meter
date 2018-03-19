@@ -15,14 +15,14 @@ class GradientCheck:
         acceptable_delta   = self.epsilon
         numeric_gradients  = self.__numeric_gradients()
         analytic_gradients = self.weight_gradients
-        delta1             = np.abs(numeric_gradients[1] - analytic_gradients[1])
-        delta2             = np.abs(numeric_gradients[2] - analytic_gradients[2])
+        delta1             = np.abs(numeric_gradients[-2] - analytic_gradients[-2])
+        delta2             = np.abs(numeric_gradients[-1] - analytic_gradients[-1])
 
-        print("numeric_gradients[1]:", numeric_gradients[1])
-        print("analytic_gradients[1]:", analytic_gradients[1])
+        print("numeric_gradients[-2]:", numeric_gradients[-2])
+        print("analytic_gradients[-2]:", analytic_gradients[-2])
 
-        print("numeric_gradients[2]:", numeric_gradients[2])
-        print("analytic_gradients[2]:", analytic_gradients[2])
+        print("numeric_gradients[-1]:", numeric_gradients[-1])
+        print("analytic_gradients[-1]:", analytic_gradients[-1])
 
         print("delta1:", delta1)
         print("delta2:", delta2)
