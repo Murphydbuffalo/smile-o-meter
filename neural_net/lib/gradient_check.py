@@ -31,7 +31,10 @@ class GradientCheck:
 
     def __numeric_gradients(self):
         weights           = np.copy(self.weights)
-        numeric_gradients = np.array([np.zeros((2304, 5)), np.zeros((3, 5)), np.zeros((3, 3))])
+        numeric_gradients = []
+
+        for i in range(len(weights)):
+            numeric_gradients.append(np.zeros(weights[i].shape))
 
         # Skip weights connecting input layer to 1st hidden layer because there
         # are so many it takes hours to calculate them all.
