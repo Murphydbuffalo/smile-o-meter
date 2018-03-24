@@ -5,13 +5,14 @@ from lib.forward_prop import ForwardProp
 from lib.cost         import Cost
 
 d       = Loader().load().normalize()
+lambda  = 0.001
 X_test  = d.Xtest_norm
 Y_test  = d.Ytest
 weights = np.load('learned_weights.npy')
 biases  = np.load('learned_biases.npy')
 
 Z, A = ForwardProp(weights, biases, X_test).run()
-c    = Cost(A[-1], Y_test).cross_entropy_loss()
+c    = Cost(A[-1], Y_test, weights, lambda).cross_entropy_loss()
 
 print("Average cost:", c)
 

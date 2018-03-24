@@ -1,13 +1,14 @@
 import numpy as np
 
 class BackwardProp:
-    def __init__(self, weights, Z, A, labels):
+    def __init__(self, weights, Z, A, labels, lambda):
         self.weights        = weights # [ 5 x 2304, 3 x 5, 3 x 3 ]
         self.Z              = Z       # Z = W_current_layer * A_previous_layer + B_current_layer and A = activation(Z) are lists with L (# of layers) elements:
         self.A              = A       # [ 5 x m (hidden), 3 x m (hidden), 3 x m (output) ]
         self.labels         = labels  # 3 x m
         self.softmax_output = A[-1]   # 3 x m
         self.m              = labels.shape[1]
+        self.lambda         = lambda
 
     def run(self):
         # these should have the following shapes (a derivative for each weight/bias)
@@ -20,7 +21,7 @@ class BackwardProp:
             else:
                 dz = self.__d_z_d_a(-i).T.dot(dz) * self.__d_relu_d_z(-i)
 
-            dw = dz.dot(self.__d_z_d_w(-i).T)
+            dw = dz.dot(self.__d_z_d_w(-i).T) + self.__d_regularization(-i)
             db = np.sum(dz, axis = 1, keepdims = True) * self.__d_z_d_b()
 
             weight_gradients.append(dw)
@@ -52,3 +53,6 @@ class BackwardProp:
 
     def __d_z_d_b(self):
         return 1.0
+
+    def __d_regularization(self, layer):
+        return self.lambda * self.weights[layer]
