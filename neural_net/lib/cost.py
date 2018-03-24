@@ -12,4 +12,10 @@ class Cost:
         return (np.sum(-np.log(self.predictions) * self.labels) / self.m) + self.l2_regularization_loss()
 
     def l2_regularization_loss(self):
-        return 0.5 * self.lambda * np.square(self.weights).sum()
+        squared_weights = np.square(self.weights)
+        weight_sum      = 0
+
+        for layer in range(len(squared_weights)):
+            weight_sum  += squared_weights[layer].sum()
+
+        return 0.5 * self.lambd * weight_sum 
