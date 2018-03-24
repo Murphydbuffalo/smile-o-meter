@@ -22,14 +22,6 @@ const NeuralNetwork = class NeuralNetwork {
     return this.vector_to_int(nonlinear_activation);
   }
 
-  // will be working with m = 1 in this case
-  // so first layer should be:
-  // weights   = [[...].length == 100].length == 2304
-  // input     = [...].length == 2304
-  // biases    = [...].length == 100
-  // W*X       = [...].length == 100
-  // A = W*X+B = [...].length == 100
-
   dot_product_plus_biases(weights, inputs, biases) {
     return this.dot_product(weights, inputs)
                .map((val, i) => val + biases[i]);
@@ -56,3 +48,5 @@ const NeuralNetwork = class NeuralNetwork {
     return exponentials.map((exp) => exp / sum);
   }
 }
+
+module.exports = NeuralNetwork;
