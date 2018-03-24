@@ -1,12 +1,12 @@
 import numpy as np
 
 class Cost:
-    def __init__(self, predictions, labels, weights, lambda):
+    def __init__(self, predictions, labels, weights, lambd):
         self.predictions = predictions
         self.labels      = labels
         self.m           = float(labels.shape[1])
         self.weights     = weights
-        self.lambda      = lambda
+        self.lambd       = lambd
 
     def cross_entropy_loss(self):
         return (np.sum(-np.log(self.predictions) * self.labels) / self.m) + self.l2_regularization_loss()
