@@ -8,8 +8,8 @@ d       = Loader().load().normalize()
 lambd   = 0.001
 X_test  = d.Xtest_norm
 Y_test  = d.Ytest
-weights = np.load('learned_weights.npy')
-biases  = np.load('learned_biases.npy')
+weights = np.load('learned_weights_regularization.npy')
+biases  = np.load('learned_biases_regularization.npy')
 
 Z, A = ForwardProp(weights, biases, X_test).run()
 c    = Cost(A[-1], Y_test, weights, lambd).cross_entropy_loss()
