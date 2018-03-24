@@ -1,5 +1,23 @@
 'use strict'
 
+// TODO: Test with some mock data for pixels, weights, and biases. Eg:
+// let pixels = [];
+// while (pixels.length < 100) {
+//   pixels.push((Math.floor(Math.random() * 255) + 1));
+// }
+//
+// let biases = [];
+// while (biases.length < 10) {
+//   biases.push((Math.floor(Math.random() * 5) + 1));
+// }
+//
+// let weights = [];
+// ... etc.
+// Maybe mock 2 layers of data? inputs with [100x1] dimensions
+// weights with [100x10, 10x3] dimensions
+// And biases with [10x1, 3x1]
+// ?
+
 const NeuralNetwork = class NeuralNetwork {
   constructor(pixels, weights, biases) {
     this.pixels  = pixels;
