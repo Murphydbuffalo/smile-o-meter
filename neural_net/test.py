@@ -8,6 +8,7 @@ d       = Loader().load().normalize()
 lambd   = 0.001
 X_test  = d.Xtest_norm
 Y_test  = d.Ytest
+
 weights = np.load('learned_weights_regularization.npy')
 biases  = np.load('learned_biases_regularization.npy')
 
@@ -16,8 +17,7 @@ c    = Cost(A[-1], Y_test, weights, lambd).cross_entropy_loss()
 
 print("Average cost:", c)
 
-predictions = (A[-1] == np.max(A[-1], axis=0)) * 1
-
+predictions           = (A[-1] == np.max(A[-1], axis=0)) * 1
 m                     = Y_test.shape[1]
 correct_predictions   = 0
 incorrect_predictions = 0
@@ -26,7 +26,7 @@ for i in range(m):
     if (predictions[:,i] == Y_test[:,i]).all():
         correct_predictions   += 1
     else:
-        incorrect_predictions +=1
+        incorrect_predictions += 1
 
 total_predictions = correct_predictions + incorrect_predictions
 
