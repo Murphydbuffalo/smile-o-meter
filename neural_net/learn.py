@@ -25,7 +25,7 @@ momentum_bias_average   = np.zeros(biases.shape)
 rms_prop_weight_average = np.zeros(weights.shape)
 rms_prop_bias_average   = np.zeros(biases.shape)
 
-for i in range(1000):
+for i in range(850):
     Z, A = ForwardProp(weights, biases, d.Xtrain_norm).run()
     c    = Cost(A[-1], d.Ytrain, weights, lambd).cross_entropy_loss()
     costs.append(c)
