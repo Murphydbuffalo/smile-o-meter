@@ -8,27 +8,27 @@ const NeuralNetwork = class NeuralNetwork {
   }
 
   predict() {
-    let inputs, linear_activation, nonlinear_activation_function, nonlinear_activation;
+    let inputs, linearActivation, nonlinearActivationFunction, nonlinearActivation;
 
     inputs = this.pixels;
 
-    this.weights.forEach(function(w, i) {
-      linear_activation             = this.dot_product_plus_biases(w, inputs, this.biases[i]);
-      nonlinear_activation_function = this.isLastLayer ? this.softmax : this.relu;
-      nonlinear_activation          = nonlinear_activation_function(linear_activation);
-      inputs                        = nonlinear_activation;
+    this.weights.forEach((w, i) => {
+      linearActivation            = this.dotProductPlusBiases(w, inputs, this.biases[i]);
+      nonlinearActivationFunction = this.isLastLayer ? this.softmax : this.relu;
+      nonlinearActivation         = nonlinearActivationFunction(linearActivation);
+      inputs                      = nonlinearActivation;
     });
 
     return this.max_probability(nonlinear_activation);
   }
 
   // TODO: Make vector/matrix classes to encapsulate the dot product logic
-  dot_product_plus_biases(weights, inputs, biases) {
-    return this.dot_product(weights, inputs)
+  dotProductPlusBiases(weights, inputs, biases) {
+    return this.dotProduct(weights, inputs)
                .map((val, i) => val + biases[i]);
   }
 
-  dot_product(weights, inputs) {
+  dotProduct(weights, inputs) {
     return weights.map(function(column) {
       column.reduce(((sum, weight, i) => sum + (weight * inputs[i])), 0);
     });
