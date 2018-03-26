@@ -19,7 +19,7 @@ const NeuralNetwork = class NeuralNetwork {
       inputs                      = nonlinearActivation;
     });
 
-    return this.max_probability(nonlinear_activation);
+    return this.predictedClass(nonlinearActivation);
   }
 
   // TODO: Make vector/matrix classes to encapsulate the dot product logic
@@ -34,8 +34,9 @@ const NeuralNetwork = class NeuralNetwork {
     });
   }
 
-  max_probability(probabilities) {
-    return Math.max(...probabilities);
+  predictedClass(probabilities) {
+    const maxProbability = Math.max(...probabilities);
+    return probabilities.indexOf(maxProbability);
   }
 
   relu(vector) {
