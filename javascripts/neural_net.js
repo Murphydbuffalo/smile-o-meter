@@ -26,20 +26,21 @@ const NeuralNetwork = class NeuralNetwork {
   }
 
   predict() {
-    let input, linear_activation, nonlinear_activation_function, nonlinear_activation;
+    let inputs, linear_activation, nonlinear_activation_function, nonlinear_activation;
 
     inputs = this.pixels;
 
     this.weights.forEach(function(w, i) {
       linear_activation             = this.dot_product_plus_biases(w, inputs, this.biases[i]);
-      nonlinear_activation_function = this.isLastLayer ? this.relu : this.softmax;
+      nonlinear_activation_function = this.isLastLayer ? this.softmax : this.relu;
       nonlinear_activation          = nonlinear_activation_function(linear_activation);
       inputs                        = nonlinear_activation;
     });
 
-    return this.vector_to_int(nonlinear_activation);
+    return this.max_probability(nonlinear_activation);
   }
 
+  // TODO: Make vector/matrix classes to encapsulate the dot product logic
   dot_product_plus_biases(weights, inputs, biases) {
     return this.dot_product(weights, inputs)
                .map((val, i) => val + biases[i]);
@@ -51,12 +52,12 @@ const NeuralNetwork = class NeuralNetwork {
     });
   }
 
-  vector_to_int(vector) {
-    return vector.indexOf(1);
+  max_probability(probabilities) {
+    return Math.max(...probabilities);
   }
 
   relu(vector) {
-    return vector.map((num) => num > 0 ? num : 0);
+    return vector.map((num) => Math.max(num, 0));
   }
 
   softmax(vector) {
