@@ -30,7 +30,7 @@ const NeuralNetwork = class NeuralNetwork {
 
   dotProduct(weights, inputs) {
     return weights.map(function(column) {
-      column.reduce(((sum, weight, i) => sum + (weight * inputs[i])), 0);
+      return column.reduce(((sum, weight, i) => sum + (weight * inputs[i])), 0);
     });
   }
 
