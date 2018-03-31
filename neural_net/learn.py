@@ -17,6 +17,7 @@ d                    = Loader().load().normalize()
 network_architecture = [d.Xtrain_norm.shape[0], 100, 10, 3]
 weights, biases      = Initialize(network_architecture).weights_and_biases()
 costs                = []
+lambd                = 0.001
 start_time           = time()
 
 momentum_weight_average = np.zeros(weights.shape)
@@ -24,12 +25,12 @@ momentum_bias_average   = np.zeros(biases.shape)
 rms_prop_weight_average = np.zeros(weights.shape)
 rms_prop_bias_average   = np.zeros(biases.shape)
 
-for i in range(1000):
+for i in range(850):
     Z, A = ForwardProp(weights, biases, d.Xtrain_norm).run()
-    c    = Cost(A[-1], d.Ytrain).cross_entropy_loss()
+    c    = Cost(A[-1], d.Ytrain, weights, lambd).cross_entropy_loss()
     costs.append(c)
 
-    weight_gradients, bias_gradients = BackwardProp(weights, Z, A, d.Ytrain).run()
+    weight_gradients, bias_gradients = BackwardProp(weights, Z, A, d.Ytrain, lambd).run()
 
     optimizer = Adam(
         weights,
