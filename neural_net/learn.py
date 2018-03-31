@@ -1,3 +1,4 @@
+import json
 import numpy             as np
 import matplotlib.pyplot as pyplot
 
@@ -75,6 +76,16 @@ print(f"Total training was {time_elapsed.day - 1}:{time_elapsed.hour}:{time_elap
 print("Saving learned parameters...")
 np.save('learned_weights', weights)
 np.save('learned_biases', biases)
+
+weights_json = json.dumps(list(map(lambda a: a.tolist(), weights)))
+weights_file = open('weights.json', 'w')
+weights_file.write(weights_json)
+weights_file.close()
+
+biases_json = json.dumps(list(map(lambda a: a.tolist(), biases)))
+biases_file = open('biases.json', 'w')
+biases_file.write(biases_json)
+biases_file.close()
 
 pyplot.ylabel('Cost')
 pyplot.xlabel('Iteration')
