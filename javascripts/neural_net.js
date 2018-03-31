@@ -35,6 +35,7 @@ const NeuralNetwork = class NeuralNetwork {
 
   predictedClass(probabilities) {
     const maxProbability = Math.max(...probabilities);
+    // TODO: Debug: sometimes maxProbability isn't present in probabilities, so the return value is -1
     return probabilities.indexOf(maxProbability);
   }
 
