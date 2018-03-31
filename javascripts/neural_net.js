@@ -24,8 +24,7 @@ const NeuralNetwork = class NeuralNetwork {
 
   // TODO: Make vector/matrix classes to encapsulate the dot product logic
   dotProductPlusBiases(weights, inputs, biases) {
-    return this.dotProduct(weights, inputs)
-               .map((val, i) => val + biases[i]);
+    return this.dotProduct(weights, inputs).map((val, i) => val + biases[i]);
   }
 
   dotProduct(weights, inputs) {
