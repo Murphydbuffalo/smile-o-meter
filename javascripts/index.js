@@ -11,6 +11,15 @@ function changeExpression(mouth) {
 }
 
 window.addEventListener("load", function(event) {
-  const mouth = document.querySelector('.mouth');
-  document.querySelector('.smiley').onclick = changeExpression(mouth)
+  document.querySelector('.smiley').onclick = changeExpression(document.querySelector('.mouth'))
+  navigator.mediaDevices
+           .getUserMedia({ video: true })
+           .then(function(mediaStream) {
+             const video     = document.querySelector('video');
+             video.srcObject = mediaStream;
+             video.play();
+           })
+           .catch(function(err) {
+             console.error('Error getting video stream:', err.message);
+           });
 });

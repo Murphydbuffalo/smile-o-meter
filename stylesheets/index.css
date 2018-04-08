@@ -62,3 +62,13 @@ h1 {
   -webkit-transition: border-radius 1s, height 1s;
   transition: 				border-radius 1s, height 1s;
 }
+
+video {
+	height: 					300px;
+	width:  					400px;
+	position: 				absolute;
+	bottom: 					5em;
+	left: 	  				5em;
+	background-color: lightgrey;
+	border-radius:    5px;
+}
