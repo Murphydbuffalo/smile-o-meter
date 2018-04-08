@@ -94,3 +94,9 @@ video {
 	background-color: lightgrey;
 	border-radius:    5px;
 }
+
+canvas {
+	height:  300px;
+	width:   400px;
+	display: none;
+}

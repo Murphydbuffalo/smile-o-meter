@@ -14,16 +14,25 @@ function changeExpression(mouth, eyes) {
 }
 
 window.addEventListener("load", function(event) {
-  const mouth = document.querySelector('.mouth');
-  const eyes  = document.querySelectorAll('.eye');
+  const mouth   = document.querySelector('.mouth');
+  const eyes    = document.querySelectorAll('.eye');
+  const animate = changeExpression(mouth, eyes);
+  const video   = document.querySelector('video');
+  const canvas  = document.querySelector('canvas');
+  const context = canvas.getContext('2d');
 
-  document.querySelector('.smiley').onclick = changeExpression(mouth, eyes)
   navigator.mediaDevices
            .getUserMedia({ video: true })
            .then(function(mediaStream) {
-             const video     = document.querySelector('video');
              video.srcObject = mediaStream;
              video.play();
+
+             setInterval(function() {
+               animate();
+               context.drawImage(video, 0, 0, 400, 300);
+               const pic = canvas.toDataURL(); // TODO: output a BLOB instead of data URl
+               console.log('pic is', pic.slice(0, 50) + '...');
+             }, 1000);
            })
            .catch(function(err) {
              console.error('Error getting video stream:', err.message);
