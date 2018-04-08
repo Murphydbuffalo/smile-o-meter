@@ -22,10 +22,10 @@ h1 {
 }
 
 .eye {
-	height: 				  2.5em;
-	width: 					  5em;
+	height: 				  3.5em;
+	width: 					  3.5em;
 	background-color: #000;
-	border-radius: 		50%;
+	border-radius: 		25%;
 	position: 				relative;
 	display: 					inline-block;
 	margin:           0 2em;
@@ -35,7 +35,8 @@ h1 {
 	width: 						20em;
 	background-color:	#000;
 	position: 				relative;
-	margin: 					18em auto 0 auto;
+	margin-top: 			16em;
+	display:          inline-block;
 }
 
 .frown {
@@ -43,7 +44,7 @@ h1 {
   transition: 				border-radius 1s, height 1s;
 
 	border-radius: 			20em 20em 0 0;
-	height:             10em;
+	height:             5em;
 }
 
 .smile {
@@ -51,7 +52,7 @@ h1 {
   transition: 				border-radius 1s, height 1s;
 
 	border-radius: 			0 0 20em 20em;
-	height:             10em;
+	height:             7em;
 }
 
 .neutral {
