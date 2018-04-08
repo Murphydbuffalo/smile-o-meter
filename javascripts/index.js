@@ -1,17 +1,23 @@
-function changeExpression(mouth) {
+function changeExpression(mouth, eyes) {
   return function(event) {
-    if (mouth.className.includes('frown')) {
-      mouth.className = 'mouth neutral';
-    } else if (mouth.className.includes('neutral')) {
-      mouth.className = 'mouth smile';
+    if (mouth.className.includes('frown-mouth')) {
+      mouth.className = 'mouth neutral-mouth';
+      eyes.forEach((eye) => eye.className = 'eye neutral-eyes');
+    } else if (mouth.className.includes('neutral-mouth')) {
+      mouth.className = 'mouth smile-mouth';
+      eyes.forEach((eye) => eye.className = 'eye smile-eyes');
     } else {
-      mouth.className = 'mouth frown';
+      mouth.className = 'mouth frown-mouth';
+      eyes.forEach((eye) => eye.className = 'eye frown-eyes');
     }
   }
 }
 
 window.addEventListener("load", function(event) {
-  document.querySelector('.smiley').onclick = changeExpression(document.querySelector('.mouth'))
+  const mouth = document.querySelector('.mouth');
+  const eyes  = document.querySelectorAll('.eye');
+
+  document.querySelector('.smiley').onclick = changeExpression(mouth, eyes)
   navigator.mediaDevices
            .getUserMedia({ video: true })
            .then(function(mediaStream) {

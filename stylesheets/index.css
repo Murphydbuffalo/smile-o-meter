@@ -14,6 +14,7 @@ h1 {
 	width: 				 		40em;
 	border-radius: 		50%;
 	background-color: yellow;
+	box-shadow:       1px 1px 1px grey;
 }
 
 .eyes {
@@ -22,10 +23,7 @@ h1 {
 }
 
 .eye {
-	height: 				  3.5em;
-	width: 					  3.5em;
 	background-color: #000;
-	border-radius: 		25%;
 	position: 				relative;
 	display: 					inline-block;
 	margin:           0 2em;
@@ -39,7 +37,7 @@ h1 {
 	display:          inline-block;
 }
 
-.frown {
+.frown-mouth {
   -webkit-transition: border-radius 1s, height 1s;
   transition: 				border-radius 1s, height 1s;
 
@@ -47,7 +45,7 @@ h1 {
 	height:             5em;
 }
 
-.smile {
+.smile-mouth {
   -webkit-transition: border-radius 1s, height 1s;
   transition: 				border-radius 1s, height 1s;
 
@@ -55,12 +53,36 @@ h1 {
 	height:             7em;
 }
 
-.neutral {
+.neutral-mouth {
 	border-radius:    	50%;
 	height: 						5em;
 
   -webkit-transition: border-radius 1s, height 1s;
   transition: 				border-radius 1s, height 1s;
+}
+
+.frown-eyes {
+  -webkit-transition: border-radius 1s, height 1s, width 1s;
+  transition: 				border-radius 1s, height 1s, width 1s;
+	height:             2em;
+	width:             	3.5em;
+	border-radius: 			1.25em;
+}
+
+.neutral-eyes {
+  -webkit-transition: border-radius 1s, height 1s, width 1s;
+  transition: 				border-radius 1s, height 1s, width 1s;
+	height:             3.5em;
+	width:             	3.5em;
+	border-radius: 			1.25em;
+}
+
+.smile-eyes {
+  -webkit-transition: border-radius 1s, height 1s, width 1s;
+  transition: 				border-radius 1s, height 1s, width 1s;
+	height:             4em;
+	width:             	4em;
+	border-radius: 			50%;
 }
 
 video {
