@@ -1,0 +1,163 @@
+#wrapper {
+	width: 			100%;
+	text-align: center;
+}
+
+h1 {
+  margin: 1em;
+}
+
+.smiley {
+  margin: 			 		5em auto;
+	position: 		 		relative;
+	height: 			 		40em;
+	width: 				 		40em;
+	border-radius: 		50%;
+	background-color: yellow;
+	box-shadow:       1px 1px 1px grey;
+}
+
+.eyes {
+	position:	relative;
+	top: 		 	10em;
+}
+
+.eye {
+	background-color: #000;
+	position: 				relative;
+	display: 					inline-block;
+	margin:           0 2em;
+}
+
+.mouth {
+	width: 						20em;
+	background-color:	#000;
+	position: 				relative;
+	margin-top: 			16em;
+	display:          inline-block;
+}
+
+.frown-mouth {
+  -webkit-transition: border-radius 1s, height 1s;
+  transition: 				border-radius 1s, height 1s;
+
+	border-radius: 			20em 20em 0 0;
+	height:             5em;
+}
+
+.smile-mouth {
+  -webkit-transition: border-radius 1s, height 1s;
+  transition: 				border-radius 1s, height 1s;
+
+	border-radius: 			0 0 20em 20em;
+	height:             7em;
+}
+
+.neutral-mouth {
+	border-radius:    	50%;
+	height: 						5em;
+
+  -webkit-transition: border-radius 1s, height 1s;
+  transition: 				border-radius 1s, height 1s;
+}
+
+.frown-eyes {
+  -webkit-transition: border-radius 1s, height 1s, width 1s;
+  transition: 				border-radius 1s, height 1s, width 1s;
+	height:             2em;
+	width:             	3.5em;
+	border-radius: 			1.25em;
+}
+
+.neutral-eyes {
+  -webkit-transition: border-radius 1s, height 1s, width 1s;
+  transition: 				border-radius 1s, height 1s, width 1s;
+	height:             3.5em;
+	width:             	3.5em;
+	border-radius: 			1.25em;
+}
+
+.smile-eyes {
+  -webkit-transition: border-radius 1s, height 1s, width 1s;
+  transition: 				border-radius 1s, height 1s, width 1s;
+	height:             4em;
+	width:             	4em;
+	border-radius: 			50%;
+}
+
+video {
+	height:  					384px;
+	width:   					384px;
+	position: 				absolute;
+	bottom: 					5em;
+	left: 	  				5em;
+	background-color: lightgrey;
+	border-radius:    5px;
+}
+
+canvas {
+	height:  384px;
+	width:   384px;
+	display: none;
+}
+
+@media (max-width: 600px) {
+	h1 {
+	  margin: 1em;
+	}
+
+	.smiley {
+	  margin:	2.5em auto;
+		height:	20em;
+		width: 	20em;
+	}
+
+	.eyes {
+		top: 5em;
+	}
+
+	.eye {
+		margin: 0 1em;
+	}
+
+	.mouth {
+		width: 						10em;
+		margin-top: 			8em;
+	}
+
+	.frown-mouth {
+		border-radius: 			10em 10em 0 0;
+		height:             2.5em;
+	}
+
+	.smile-mouth {
+		border-radius: 			0 0 10em 10em;
+		height:             3.5;
+	}
+
+	.neutral-mouth {
+		height: 						2.5em;
+	}
+
+	.frown-eyes {
+		height:             1em;
+		width:             	1.75em;
+	}
+
+	.neutral-eyes {
+		height:             1.75em;
+		width:             	1.75em;
+		border-radius: 			0.625em;
+	}
+
+	.smile-eyes {
+		height:             2em;
+		width:             	2em;
+	}
+
+	video {
+		height: 150px;
+		width: 	200px;
+		left: 	7em;
+	}
+}
