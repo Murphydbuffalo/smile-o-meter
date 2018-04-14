@@ -86,8 +86,8 @@ h1 {
 }
 
 video {
-	height: 					300px;
-	width:  					400px;
+	height:  					384px;
+	width:   					384px;
 	position: 				absolute;
 	bottom: 					5em;
 	left: 	  				5em;
@@ -96,8 +96,8 @@ video {
 }
 
 canvas {
-	height:  300px;
-	width:   400px;
+	height:  384px;
+	width:   384px;
 	display: none;
 }
 
