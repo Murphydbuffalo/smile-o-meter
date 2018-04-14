@@ -13,7 +13,7 @@ function changeExpression(mouth, eyes) {
   }
 }
 
-window.addEventListener("load", function(event) {
+window.addEventListener('load', function(event) {
   const mouth   = document.querySelector('.mouth');
   const eyes    = document.querySelectorAll('.eye');
   const animate = changeExpression(mouth, eyes);
@@ -30,7 +30,7 @@ window.addEventListener("load", function(event) {
              setInterval(function() {
                animate();
                context.drawImage(video, 0, 0, 400, 300);
-               const pic = canvas.toDataURL(); // TODO: output a BLOB instead of data URl
+               const pic = canvas.toDataURL();
                console.log('pic is', pic.slice(0, 50) + '...');
              }, 1000);
            })

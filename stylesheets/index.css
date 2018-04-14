@@ -100,3 +100,64 @@ canvas {
 	width:   400px;
 	display: none;
 }
+
+@media (max-width: 600px) {
+	h1 {
+	  margin: 1em;
+	}
+
+	.smiley {
+	  margin:	2.5em auto;
+		height:	20em;
+		width: 	20em;
+	}
+
+	.eyes {
+		top: 5em;
+	}
+
+	.eye {
+		margin: 0 1em;
+	}
+
+	.mouth {
+		width: 						10em;
+		margin-top: 			8em;
+	}
+
+	.frown-mouth {
+		border-radius: 			10em 10em 0 0;
+		height:             2.5em;
+	}
+
+	.smile-mouth {
+		border-radius: 			0 0 10em 10em;
+		height:             3.5;
+	}
+
+	.neutral-mouth {
+		height: 						2.5em;
+	}
+
+	.frown-eyes {
+		height:             1em;
+		width:             	1.75em;
+	}
+
+	.neutral-eyes {
+		height:             1.75em;
+		width:             	1.75em;
+		border-radius: 			0.625em;
+	}
+
+	.smile-eyes {
+		height:             2em;
+		width:             	2em;
+	}
+
+	video {
+		height: 150px;
+		width: 	200px;
+		left: 	7em;
+	}
+}
