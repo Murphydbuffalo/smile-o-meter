@@ -1,0 +1,29 @@
+{
+  "name": "smile-o-meter",
+  "version": "1.0.0",
+  "description": "Image recognition's true purpose: animating a smiley face when the user smiles or frowns.",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Murphydbuffalo/smile-o-meter.git"
+  },
+  "keywords": [
+    "image recognition",
+    "neural network",
+    "machine learning"
+  ],
+  "author": "Dan Murphy",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Murphydbuffalo/smile-o-meter/issues"
+  },
+  "homepage": "https://github.com/Murphydbuffalo/smile-o-meter#readme",
+  "devDependencies": {
+    "md5-file": "^4.0.0",
+    "uglify-es": "^3.3.9",
+    "uglifycss": "0.0.29"
+  }
+}

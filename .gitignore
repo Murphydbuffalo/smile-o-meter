@@ -7,3 +7,4 @@ neural_net/warning_example.py
 neural_net/*.npy
 weights.json
 biases.json
+node_modules

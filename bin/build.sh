@@ -3,25 +3,24 @@
 # Exit the script if any command within it returns with an error.
 set -e
 
+npm install
 rm -rf ./build/*
 cp -R ./favicons/* ./images ./build
 
 # Concatenate and minify all files in the `/stylesheets` and `/javascript` directories.
 # And move the resulting manifest files to the `/build` directory of the project.
 #
-# We make separate calls to `uglify` and `minify` (which is just a wrapper library
-# that can call `uglify` if you want), because we are using the `harmony` branch
-# of `uglify`. This allows us to minify ES6 JavaScript.
+# We are using `uglify-es`'s `uglifyjs` binary so that we can minify ES6 JavaScript.
 #
 # We also give each manifest file a unique name that includes the hash of the file
 # contents of the corresponding file (either `index.css` and `index.js`).
 # These unique names, combined with setting the `Cache-Control` header's `maxage`
 # value allow browsers to avoid making requests for our JS and CSS files for up
 # to one year, so long as the contents of `index.css/js` haven't changed.
-JS_HASH=`md5sum ./javascripts/index.js | awk '{print $1}'`
-CSS_HASH=`md5sum ./stylesheets/index.css | awk '{print $1}'`
-uglifyjs ./javascripts/index.js --compress --mangle toplevel --output "./build/index-$JS_HASH.min.js"
-uglifycss --output "./build/index-$CSS_HASH.min.css" ./stylesheets/normalize.css ./stylesheets/skeleton.css ./stylesheets/index.css
+JS_HASH=`./node_modules/md5-file/cli.js ./javascripts/index.js`
+CSS_HASH=`./node_modules/md5-file/cli.js ./stylesheets/index.css`
+./node_modules/uglify-es/bin/uglifyjs ./javascripts/index.js --compress --output "./build/index-$JS_HASH.min.js"
+./node_modules/uglifycss/uglifycss --output "./build/index-$CSS_HASH.min.css" ./stylesheets/normalize.css ./stylesheets/skeleton.css ./stylesheets/index.css
 
 # Build full HTML file from `template.html`
 #
