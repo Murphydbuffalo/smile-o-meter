@@ -22,8 +22,13 @@
   },
   "homepage": "https://github.com/Murphydbuffalo/smile-o-meter#readme",
   "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.4",
+    "babel-preset-env": "^1.6.1",
     "md5-file": "^4.0.0",
-    "uglify-es": "^3.3.9",
-    "uglifycss": "0.0.29"
+    "uglifycss": "0.0.29",
+    "webpack": "^4.6.0",
+    "webpack-cli": "^2.0.15",
+    "npm": "^6.0.0"
   }
 }
