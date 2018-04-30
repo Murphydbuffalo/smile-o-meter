@@ -1,8 +1,7 @@
-NOTES.markdown
 /build
 **/__pycache__
 **/*.pyc
 **/*.csv
 neural_net/warning_example.py
 neural_net/*.npy
-
+node_modules

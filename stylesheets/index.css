@@ -15,6 +15,7 @@ h1 {
 	border-radius: 		50%;
 	background-color: yellow;
 	box-shadow:       1px 1px 1px grey;
+	z-index: 					1;
 }
 
 .eyes {
@@ -93,12 +94,20 @@ video {
 	left: 	  				5em;
 	background-color: lightgrey;
 	border-radius:    5px;
+	z-index: 					0;
 }
 
 canvas {
 	height:  384px;
 	width:   384px;
 	display: none;
+}
+
+canvas.show {
+	position: absolute;
+	bottom:   5em;
+	right: 	  5em;
+	display:  block;
 }
 
 @media (max-width: 600px) {
