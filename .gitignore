@@ -5,3 +5,5 @@
 neural_net/warning_example.py
 neural_net/*.npy
 node_modules
+lambda/*
+!lambda/predict.py
