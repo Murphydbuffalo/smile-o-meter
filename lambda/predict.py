@@ -21,9 +21,12 @@ def forward_prop(A):
     for i in range(len(weights)):
         Z = np.dot(weights[i], A) + biases[i]
         A = relu(Z)
+
     return softmax_activation(Z)
 
 def predict(event, context):
     pixels             = np.array([event['pixels']]).T
     softmax_activation = forward_prop(pixels)
-    return np.argmax(softmax_activation)
+    prediction         = np.argmax(softmax_activation)
+
+    return { "statusCode": 200, "body": str(prediction) }
