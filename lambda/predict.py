@@ -2,10 +2,10 @@ import numpy as np
 import boto3
 
 s3           = boto3.client('s3')
-weights_file = s3.download_file('smile-o-meter.rocks', 'learned_weights.npy', 'learned_weights.npy')
-biases_file  = s3.download_file('smile-o-meter.rocks', 'learned_biases.npy',  'learned_biases.npy')
-weights      = np.load('learned_weights.npy')
-biases       = np.load('learned_biases.npy')
+weights_file = s3.download_file('smile-o-meter.rocks', 'learned_weights.npy', '/tmp/learned_weights.npy')
+biases_file  = s3.download_file('smile-o-meter.rocks', 'learned_biases.npy',  '/tmp/learned_biases.npy')
+weights      = np.load('/tmp/learned_weights.npy')
+biases       = np.load('/tmp/learned_biases.npy')
 
 def relu(Z):
     return np.maximum(Z, 0)
