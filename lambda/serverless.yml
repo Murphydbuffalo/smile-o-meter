@@ -1,0 +1,19 @@
+# serverless.yml
+
+service: predict
+
+provider:
+  name: aws
+  runtime: python3.6
+
+functions:
+  predict:
+    handler: predict.predict
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    dockerizePip: non-linux
+
