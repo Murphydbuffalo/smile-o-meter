@@ -1,3 +1,4 @@
+import sys
 import numpy as np
 import boto3
 
@@ -25,8 +26,11 @@ def forward_prop(A):
     return softmax_activation(Z)
 
 def predict(event, context):
-    pixels             = np.array([event['pixels']]).T
-    softmax_activation = forward_prop(pixels)
-    prediction         = np.argmax(softmax_activation)
+    try:
+        pixels             = np.array([event['pixels']]).T
+        softmax_activation = forward_prop(pixels)
+        prediction         = np.argmax(softmax_activation)
 
-    return { "statusCode": 200, "body": str(prediction) }
+        return { "statusCode": 200, "body": str(prediction) }
+    except:
+        return { "statusCode": 500, "body": str(sys.exc_info()) }

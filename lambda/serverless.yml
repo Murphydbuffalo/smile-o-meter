@@ -2,6 +2,9 @@
 
 service: predict
 
+package:
+  individually: true
+
 provider:
   name: aws
   runtime: python3.6
@@ -9,6 +12,7 @@ provider:
 functions:
   predict:
     handler: predict.predict
+    module: predict
 
 plugins:
   - serverless-python-requirements
@@ -16,4 +20,3 @@ plugins:
 custom:
   pythonRequirements:
     dockerizePip: non-linux
-
