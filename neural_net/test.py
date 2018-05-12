@@ -5,7 +5,7 @@ from lib.forward_prop import ForwardProp
 from lib.cost         import Cost
 
 d       = Loader().load().normalize()
-lambd   = 0.001
+lambd   = 0
 X_test  = d.Xtest_norm
 Y_test  = d.Ytest
 
@@ -23,7 +23,7 @@ correct_predictions   = 0
 incorrect_predictions = 0
 
 for i in range(m):
-    if (predictions[:,i] == Y_test[:,i]).all():
+    if (np.argmax(predictions[:,i]) == np.argmax(Y_test[:,i])):
         correct_predictions   += 1
     else:
         incorrect_predictions += 1
