@@ -16,6 +16,6 @@ class Cost:
         weight_sum      = 0
 
         for layer in range(len(squared_weights)):
-            weight_sum  += squared_weights[layer].sum()
+            weight_sum += squared_weights[layer].sum()
 
-        return 0.5 * self.lambd * weight_sum 
+        return 0.5 * self.lambd * weight_sum
