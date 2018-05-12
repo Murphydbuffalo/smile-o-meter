@@ -73,8 +73,8 @@ time_elapsed = datetime(1,1,1) + seconds
 print(f"Total training was {time_elapsed.day - 1}:{time_elapsed.hour}:{time_elapsed.minute}:{time_elapsed.second}")
 
 print("Saving learned parameters...")
-np.save('learned_weights', weights)
-np.save('learned_biases', biases)
+np.save('./output/learned_weights', weights)
+np.save('./output/learned_biases', biases)
 
 pyplot.ylabel('Cost')
 pyplot.xlabel('Iteration')

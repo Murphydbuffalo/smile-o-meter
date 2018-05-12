@@ -6,7 +6,7 @@ set -e
 npm install
 rm -rf ./build/*
 cp -R ./favicons/* ./images ./build
-cp ./neural_net/learned_weights.npy ./neural_net/learned_biases.npy ./build
+cp ./neural_net/output/learned_weights.npy ./neural_net/output/learned_biases.npy ./build
 
 # Concatenate and minify all files in the `/stylesheets` and `/javascript` directories.
 # And move the resulting manifest files to the `/build` directory of the project.
