@@ -4,7 +4,7 @@
 **/*.csv
 node_modules
 lambda/node_modules
-lambda/venv
+lambda/env
 lambda/.serverless
 neural_net/env
 neural_net/.Python
