@@ -29,11 +29,11 @@ const ImageManipulation = class ImageManipulation {
   rgbaFromGrayscale(pixels) {
     const buffer = new Uint8ClampedArray(pixels.length * 4);
     const length = pixels.length
-    let grayscaleIndex, bufferIndex;
+    let grayscaleIndex, bufferIndex, pixel;
 
     for (grayscaleIndex = 0; grayscaleIndex < length; grayscaleIndex += 1) {
-      bufferIndex = grayscaleIndex * 4;
-      pixel       = pixels[grayscaleIndex];
+      bufferIndex             = grayscaleIndex * 4;
+      pixel                   = pixels[grayscaleIndex];
       buffer[bufferIndex]     = pixel // Red
       buffer[bufferIndex + 1] = pixel // Green
       buffer[bufferIndex + 2] = pixel // Blue
