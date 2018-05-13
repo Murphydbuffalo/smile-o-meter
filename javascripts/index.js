@@ -27,8 +27,9 @@ const classify = function(grayscalePixels) {
     mode: 'cors'
   };
 
-  return fetch(url, options).then(response => console.log("response is:", response) && response.json())
-                            .catch(error   => console.error('Error calling lambda:', error.message));
+  return fetch(url, options).then(response   => response.json())
+                            .then(imageClass => imageClass)
+                            .catch(error     => console.error('Error calling lambda:', error.message));
 };
 
 window.addEventListener('load', function(event) {
@@ -45,13 +46,16 @@ window.addEventListener('load', function(event) {
              setInterval(function() {
                const pixels          = videoFeed.currentFrame;
                const grayscalePixels = videoFeed.grayscale(pixels);
-               const imageClass      = classify(grayscalePixels);
 
-               if (window.location.search.includes('show-grayscale')) {
-                 videoFeed.renderGrayscale(grayscalePixels);
-               }
+               classify(grayscalePixels).then(function(imageClass) {
+                 console.log('imageClass is', imageClass);
 
-               animate(mouth, eyes, imageClass);
+                 if (window.location.search.includes('show-grayscale')) {
+                   videoFeed.renderGrayscale(grayscalePixels);
+                 }
+
+                 animate(mouth, eyes, imageClass);
+               });
              }, 1000);
            })
            .catch(function(err) {
