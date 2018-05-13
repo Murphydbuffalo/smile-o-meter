@@ -27,12 +27,25 @@ def forward_prop(A):
     return softmax_activation(Z)
 
 def predict(event, context):
+    headers = {
+        "Content-Type": "application/json",
+        "Access-Control-Allow-Origin": "*"
+    }
+
     try:
         pixels             = json.loads(event['body'])['pixels']
         array              = np.array([pixels]).T
         softmax_activation = forward_prop(array)
         prediction         = np.argmax(softmax_activation)
 
-        return { "statusCode": 200, "body": str(prediction) }
+        return {
+            "statusCode": 200,
+            "body": str(prediction),
+            "headers": headers
+        }
     except:
-        return { "statusCode": 500, "body": str(sys.exc_info()) }
+        return {
+            "statusCode": 500,
+            "body": str(sys.exc_info()),
+            "headers": headers
+        }
