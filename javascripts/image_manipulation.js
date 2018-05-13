@@ -7,9 +7,9 @@ const ImageManipulation = class ImageManipulation {
 
   renderGrayscale(grayscalePixels) {
     const rgbaPixels = this.rgbaFromGrayscale(grayscalePixels);
-    const imageData  = this.context.createImageData(this.neuralNetworkImageDimension, this.neuralNetworkImageDimension);
+    const imageData  = this.canvasContext().createImageData(this.neuralNetworkImageDimension, this.neuralNetworkImageDimension);
     imageData.data.set(rgbaPixels);
-    this.context.putImageData(imageData, 0, 0);
+    this.canvasContext().putImageData(imageData, 0, 0);
   }
 
   // Takes an ImageData array, which contains four elements for each pixel (R, G, B, and A values)
@@ -49,8 +49,8 @@ const ImageManipulation = class ImageManipulation {
   }
 
   get currentFrame() {
-    this.context.drawImage(this.video, 0, 0, this.videoDimension, this.videoDimension);
-    return this.context.getImageData(0, 0, this.neuralNetworkImageDimension, this.neuralNetworkImageDimension).data;
+    this.canvasContext().drawImage(this.video, 0, 0, this.videoDimension, this.videoDimension);
+    return this.canvasContext().getImageData(0, 0, this.neuralNetworkImageDimension, this.neuralNetworkImageDimension).data;
   }
 
   get video() {
@@ -61,13 +61,19 @@ const ImageManipulation = class ImageManipulation {
     return document.querySelector('canvas');
   }
 
-  get context() {
+  canvasContext() {
+    if (this.context != null) {
+      return this.context;
+    }
+
     const context = this.canvas.getContext('2d');
     context.scale(this.scalingFactor, this.scalingFactor);
 
     if (window.location.search.includes('show-grayscale')) {
       this.canvas.className = 'show';
     }
+
+    this.context = context;
 
     return context;
   }
