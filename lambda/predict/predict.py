@@ -1,6 +1,7 @@
 import sys
 import numpy as np
 import boto3
+import json
 
 s3           = boto3.client('s3')
 weights_file = s3.download_file('smile-o-meter.rocks', 'learned_weights.npy', '/tmp/learned_weights.npy')
@@ -27,8 +28,9 @@ def forward_prop(A):
 
 def predict(event, context):
     try:
-        pixels             = np.array([event['pixels']]).T
-        softmax_activation = forward_prop(pixels)
+        pixels             = json.loads(event['body'])['pixels']
+        array              = np.array([pixels]).T
+        softmax_activation = forward_prop(array)
         prediction         = np.argmax(softmax_activation)
 
         return { "statusCode": 200, "body": str(prediction) }
