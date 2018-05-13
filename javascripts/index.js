@@ -1,6 +1,5 @@
 import ImageManipulation from './image_manipulation.js';
 
-
 const animate = function(mouth, eyes, imageClass) {
   switch (imageClass) {
     case 0:
@@ -19,8 +18,17 @@ const animate = function(mouth, eyes, imageClass) {
 };
 
 const classify = function(grayscalePixels) {
-  // TODO: Call AWS Lambda with neural net code
-  return  Math.floor(Math.random() * 3);
+  const url     = "https://295xgmxf2m.execute-api.us-east-1.amazonaws.com/V1/predict-dev-predict";
+  const options = {
+    body: JSON.stringify({ pixels: grayscalePixels }),
+    cache: 'no-cache',
+    headers: { 'content-type': 'application/json', 'accept': 'application/json' },
+    method: 'POST',
+    mode: 'cors'
+  };
+
+  return fetch(url, options).then(response => console.log("response is:", response) && response.json())
+                            .catch(error   => console.error('Error calling lambda:', error.message));
 };
 
 window.addEventListener('load', function(event) {
