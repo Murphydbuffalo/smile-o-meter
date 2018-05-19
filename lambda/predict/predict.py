@@ -26,6 +26,14 @@ def forward_prop(A):
 
     return softmax_activation(Z)
 
+# Normalizes input data to have mean 0 and variance 1
+def normalize(matrix):
+    means                                 = np.mean(matrix, 0)
+    mean_zero_data                        = matrix - means
+    standard_deviations                   = np.std(mean_zero_data, 0)
+
+    return mean_zero_data / standard_deviations
+
 def predict(event, context):
     headers = {
         "Content-Type": "application/json",
@@ -35,7 +43,8 @@ def predict(event, context):
     try:
         pixels             = json.loads(event['body'])['pixels']
         array              = np.array([pixels]).T
-        softmax_activation = forward_prop(array)
+        normalized_array   = normalize(array)
+        softmax_activation = forward_prop(normalized_array)
         prediction         = np.argmax(softmax_activation)
 
         return {
