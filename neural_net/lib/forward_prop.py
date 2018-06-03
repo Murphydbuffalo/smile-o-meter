@@ -22,7 +22,6 @@ class ForwardProp:
 
         return [self.linear_activations, self.nonlinear_activations]
 
-    # TODO: Try softplus to see if it performs noticeably better or worse.
     def __relu(self, Z):
         # NOTE: np.maximum is NOT the same as np.max, which find the maximum value
         # in the matrix (or in each row/column of the matrix).
