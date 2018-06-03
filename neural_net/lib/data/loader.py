@@ -14,12 +14,6 @@ class Loader:
         self.Xtest          = None
         self.Ytest          = None
 
-    def normalize(self):
-        self.Xtrain_norm = self.__norm(self.Xtrain)
-        self.Xtest_norm  = self.__norm(self.Xtest)
-
-        return self
-
     def load(self):
         for data_source in self.data_sources:
             data_source.load_data(self.print_progress)
@@ -45,15 +39,16 @@ class Loader:
         self.Xtest = Xtest_no_bad_data
         self.Ytest = Ytest_no_bad_data
 
+        self.training_set_means                         = np.array([np.mean(self.Xtrain, 1)]).T
+        zero_mean_training_data                         = self.Xtrain - self.training_set_means
+        adjusted_mean_test_data                         = self.Xtest  - self.training_set_means
+        self.zero_mean_training_set_standard_deviations = np.array([np.std(zero_mean_training_data, 1)]).T
+
+        # Transform training data so it has mean 0 and variance 1, apply identical transformation to test data
+        self.Xtrain_norm =  (zero_mean_training_data) / self.zero_mean_training_set_standard_deviations
+        self.Xtest_norm  =  (adjusted_mean_test_data) / self.zero_mean_training_set_standard_deviations
+
         return self
-
-    # Normalizes input data to have mean 0 and variance 1
-    def __norm(self, matrix):
-        means                                 = np.mean(matrix, 0)
-        mean_zero_data                        = matrix - means
-        standard_deviations                   = np.std(mean_zero_data, 0)
-
-        return mean_zero_data / standard_deviations
 
     def __remove_zero_standard_deviation_examples(self, matrix, labels):
         standard_deviations                   = np.std(matrix, 0)

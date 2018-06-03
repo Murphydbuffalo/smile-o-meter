@@ -13,8 +13,8 @@ from lib.backward_prop  import BackwardProp
 from lib.optimize       import Adam
 from lib.gradient_check import GradientCheck
 
-d                    = Loader().load().normalize()
-network_architecture = [d.Xtrain_norm.shape[0], 100, 10, 3]
+data                 = Loader().load()
+network_architecture = [data.Xtrain_norm.shape[0], 100, 10, 3]
 weights, biases      = Initialize(network_architecture).weights_and_biases()
 costs                = []
 lambd                = 0.001
@@ -26,11 +26,11 @@ rms_prop_weight_average = np.zeros(weights.shape)
 rms_prop_bias_average   = np.zeros(biases.shape)
 
 for i in range(850):
-    Z, A = ForwardProp(weights, biases, d.Xtrain_norm).run()
-    c    = Cost(A[-1], d.Ytrain, weights, lambd).cross_entropy_loss()
+    Z, A = ForwardProp(weights, biases, data.Xtrain_norm).run()
+    c    = Cost(A[-1], data.Ytrain, weights, lambd).cross_entropy_loss()
     costs.append(c)
 
-    weight_gradients, bias_gradients = BackwardProp(weights, Z, A, d.Ytrain, lambd).run()
+    weight_gradients, bias_gradients = BackwardProp(weights, Z, A, data.Ytrain, lambd).run()
 
     optimizer = Adam(
         weights,
@@ -57,7 +57,7 @@ for i in range(850):
         print("Cost is", c)
 
         if len(argv) > 1 and argv[1] == '--check-gradients' and i % 100 == 0:
-            check = GradientCheck(weights, biases, weight_gradients, d.Xtrain_norm, d.Ytrain)
+            check = GradientCheck(weights, biases, weight_gradients, data.Xtrain_norm, data.Ytrain)
             print("Are the analytic gradients about the same as the numeric gradients?", check.run())
 
     weights                 = updated_weights

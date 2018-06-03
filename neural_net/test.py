@@ -4,7 +4,7 @@ from lib.data.loader  import Loader
 from lib.forward_prop import ForwardProp
 from lib.cost         import Cost
 
-d       = Loader().load().normalize()
+d       = Loader().load()
 lambd   = 0
 X_test  = d.Xtest_norm
 Y_test  = d.Ytest
