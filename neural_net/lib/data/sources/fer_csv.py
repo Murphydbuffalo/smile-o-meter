@@ -14,8 +14,8 @@ class FER_CSV:
 
 
     def __label(self, row):
-        # For the Smile-O-Meter we want three classes: 0 = Netural, 1 = Happy,   2 = Sad
-        # Need to convert from the FER labels of:      0 = Angry,   1 = Disgust, 2 = Fear, 3 = Happy, 4 = Sad, 5 = Surprise, 6 = Neutral
+        # For the Smile-O-Meter we want three classes: 0 = Netural, 1 = Happy,     2 = Sad
+        # Need to convert from the FER labels of:      0 = Angry,   1 = Disgusted, 2 = Afraid, 3 = Happy, 4 = Sad, 5 = Surprised, 6 = Neutral
         fer_label = int(row['emotion'])
 
         if fer_label == 6:
