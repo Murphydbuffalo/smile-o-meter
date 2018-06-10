@@ -76,6 +76,10 @@ print("Saving learned parameters...")
 np.save('./output/learned_weights', weights)
 np.save('./output/learned_biases', biases)
 
+print("Saving statistics for normalization...")
+np.save('./output/training_set_means', data.training_set_means)
+np.save('./output/zero_mean_training_set_standard_deviations', data.zero_mean_training_set_standard_deviations)
+
 pyplot.ylabel('Cost')
 pyplot.xlabel('Iteration')
 pyplot.plot(costs)

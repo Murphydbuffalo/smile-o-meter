@@ -5,8 +5,13 @@ set -e
 
 npm install
 rm -rf ./build/*
+
+# Webpage assets
 cp -R ./favicons/* ./images ./build
+
+# Neural network learned parameters and statistics for input data normalization 
 cp ./neural_net/output/learned_weights.npy ./neural_net/output/learned_biases.npy ./build
+cp ./neural_net/output/training_set_means.npy ./neural_net/output/zero_mean_training_set_standard_deviations.npy ./build
 
 # Concatenate and minify all files in the `/stylesheets` and `/javascript` directories.
 # And move the resulting manifest files to the `/build` directory of the project.

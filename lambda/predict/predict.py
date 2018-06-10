@@ -9,6 +9,11 @@ biases_file  = s3.download_file('smile-o-meter.rocks', 'learned_biases.npy',  '/
 weights      = np.load('/tmp/learned_weights.npy')
 biases       = np.load('/tmp/learned_biases.npy')
 
+training_set_means_file                    = s3.download_file('smile-o-meter.rocks', 'training_set_means.npy', '/tmp/training_set_means.npy')
+standard_deviations_file                   = s3.download_file('smile-o-meter.rocks', 'zero_mean_training_set_standard_deviations.npy',  '/tmp/zero_mean_training_set_standard_deviations.npy')
+training_set_means                         = np.load('/tmp/training_set_means.npy')
+zero_mean_training_set_standard_deviations = np.load('/tmp/zero_mean_training_set_standard_deviations.npy')
+
 def relu(Z):
     return np.maximum(Z, 0)
 
@@ -26,13 +31,10 @@ def forward_prop(A):
 
     return softmax_activation(Z)
 
-# Normalizes input data to have mean 0 and variance 1
+# Normalizes input data based on the zero-mean one-standard-deviation
+# transformation that was applied to the training set
 def normalize(matrix):
-    means                                 = np.mean(matrix, 0)
-    mean_zero_data                        = matrix - means
-    standard_deviations                   = np.std(mean_zero_data, 0)
-
-    return mean_zero_data / standard_deviations
+    return (matrix - training_set_means) / zero_mean_training_set_standard_deviations
 
 def predict(event, context):
     headers = {
