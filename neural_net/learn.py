@@ -14,10 +14,10 @@ from lib.optimize       import Adam
 from lib.gradient_check import GradientCheck
 
 data                 = Loader().load()
-network_architecture = [data.Xtrain_norm.shape[0], 100, 10, 3]
+network_architecture = [data.Xtrain_norm.shape[0], 300, 100, 3]
 weights, biases      = Initialize(network_architecture).weights_and_biases()
 costs                = []
-lambd                = 0.001
+lambd                = 0.0001
 start_time           = time()
 
 momentum_weight_average = np.zeros(weights.shape)
@@ -25,7 +25,7 @@ momentum_bias_average   = np.zeros(biases.shape)
 rms_prop_weight_average = np.zeros(weights.shape)
 rms_prop_bias_average   = np.zeros(biases.shape)
 
-for i in range(850):
+for i in range(1200):
     Z, A = ForwardProp(weights, biases, data.Xtrain_norm).run()
     c    = Cost(A[-1], data.Ytrain, weights, lambd).cross_entropy_loss()
     costs.append(c)
