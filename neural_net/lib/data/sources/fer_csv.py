@@ -8,24 +8,23 @@ class FER_CSV:
     def __init__(self):
         self.csv    = csv.DictReader(open(self.filename))
         self.Xtrain = []
-        self.Ytrain = np.array([[],[],[]]) # Our Y matrices will have shape 3 x m (we have 3 classes)
         self.Xtest  = []
-        self.Ytest  = np.array([[],[],[]])
+        self.Ytrain = self.__k_dimensional_array()
+        self.Ytest  = self.__k_dimensional_array()
 
 
+    # Where `k` is the number of classes in our classifier/data set.
+    def __k_dimensional_array(self):
+        return np.array([[], [], [], [], [], [], []])
+
+    # Convert an integer into a "one-hot" vector of 0s and 1s, with the sole 1 at
+    # the index corresponding to the integer.
     def __label(self, row):
-        # For the Smile-O-Meter we want three classes: 0 = Netural, 1 = Happy,     2 = Sad
-        # Need to convert from the FER labels of:      0 = Angry,   1 = Disgusted, 2 = Afraid, 3 = Happy, 4 = Sad, 5 = Surprised, 6 = Neutral
-        fer_label = int(row['emotion'])
+        one_hot_vector            = np.zeros((7, 1))
+        fer_label                 = int(row['emotion'])
+        one_hot_vector[fer_label] = 1
 
-        if fer_label == 6:
-            label = np.array([[1],[0],[0]])
-        elif fer_label == 3:
-            label = np.array([[0],[1],[0]])
-        else:
-            label = np.array([[0],[0],[1]])
-
-        return label
+        return one_hot_vector
 
     def __pixels(self, row):
         return np.array(row['pixels'].split(), 'int')

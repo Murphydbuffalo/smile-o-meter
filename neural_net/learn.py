@@ -14,7 +14,7 @@ from lib.optimize       import Adam
 from lib.gradient_check import GradientCheck
 
 data                 = Loader().load()
-network_architecture = [data.Xtrain_norm.shape[0], 300, 100, 3]
+network_architecture = [data.num_features, 300, 100, data.num_classes]
 weights, biases      = Initialize(network_architecture).weights_and_biases()
 costs                = []
 lambd                = 0.0001

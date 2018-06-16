@@ -48,6 +48,10 @@ class Loader:
         self.Xtrain_norm =  (zero_mean_training_data) / self.zero_mean_training_set_standard_deviations
         self.Xtest_norm  =  (adjusted_mean_test_data) / self.zero_mean_training_set_standard_deviations
 
+        # Descriptive names
+        self.num_features = self.Xtrain.shape[0]
+        self.num_classes  = self.Ytrain.shape[0]
+
         return self
 
     def __remove_zero_standard_deviation_examples(self, matrix, labels):
