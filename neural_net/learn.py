@@ -1,20 +1,24 @@
 import numpy             as np
+import matplotlib
+matplotlib.use('TkAgg')
 import matplotlib.pyplot as pyplot
 
 from time     import time
 from datetime import datetime, timedelta
 from sys      import argv
 
-from lib.data.loader    import Loader
-from lib.initialize     import Initialize
-from lib.forward_prop   import ForwardProp
-from lib.cost           import Cost
-from lib.backward_prop  import BackwardProp
-from lib.optimize       import Adam
-from lib.gradient_check import GradientCheck
+from lib.data.sources.fer_csv import FER_CSV
+from lib.data.formatter       import Formatter
+from lib.initialize           import Initialize
+from lib.forward_prop         import ForwardProp
+from lib.cost                 import Cost
+from lib.backward_prop        import BackwardProp
+from lib.optimize             import Adam
+from lib.gradient_check       import GradientCheck
 
-data                 = Loader().load()
-network_architecture = [data.num_features, 300, 100, data.num_classes]
+pixels_csv = FER_CSV().load_data()
+data                 = Formatter(pixels_csv).run()
+network_architecture = [data.num_features, 250, 125, data.num_classes]
 weights, biases      = Initialize(network_architecture).weights_and_biases()
 costs                = []
 lambd                = 0.0001

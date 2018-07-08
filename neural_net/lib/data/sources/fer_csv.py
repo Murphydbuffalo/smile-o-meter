@@ -12,31 +12,6 @@ class FER_CSV:
         self.Ytrain = self.__k_dimensional_array()
         self.Ytest  = self.__k_dimensional_array()
 
-
-    # Where `k` is the number of classes in our classifier/data set.
-    def __k_dimensional_array(self):
-        return np.array([[], [], [], [], [], [], []])
-
-    # Convert an integer into a "one-hot" vector of 0s and 1s, with the sole 1 at
-    # the index corresponding to the integer.
-    def __label(self, row):
-        one_hot_vector            = np.zeros((7, 1))
-        fer_label                 = int(row['emotion'])
-        one_hot_vector[fer_label] = 1
-
-        return one_hot_vector
-
-    def __pixels(self, row):
-        return np.array(row['pixels'].split(), 'int')
-
-    def __add_data(self, label, pixels, partition):
-        if partition == 'PublicTest':
-            self.Xtest.append(pixels)
-            self.Ytest = np.column_stack((self.Ytest, label))
-        else:
-            self.Xtrain.append(pixels)
-            self.Ytrain = np.column_stack((self.Ytrain, label))
-
     def load_data(self, print_progress = False):
         for index, row in enumerate(self.csv):
             partition = row['Usage']
@@ -55,4 +30,34 @@ class FER_CSV:
         self.Xtrain = np.array(self.Xtrain).T
         self.Xtest  = np.array(self.Xtest).T
 
-        return True
+        return self
+
+    # Where `k` is the number of classes in our classifier/data set.
+    def __k_dimensional_array(self):
+        return np.array([[], [], [], [], [], [], []])
+
+    # Convert an integer into a "one-hot" vector of 0s and 1s, with the sole 1 at
+    # the index corresponding to the integer.
+    def __label(self, row):
+        one_hot_vector            = np.zeros((7, 1))
+        fer_label                 = int(row['emotion'])
+        one_hot_vector[fer_label] = 1
+
+        return one_hot_vector
+
+    def __pixels(self, row):
+        return np.array(row['pixels'].split(), 'int')
+
+    # TODO: REFACTOR
+    # Can you build these arrays in a cleaner way via better use of Numpy?
+    # Or at least build them in a consistent way instead of using both `append`
+    # and `column_stack`?
+    # Can you factor the partition conditional into a descriptive method, or use
+    # duck typing and classes? Having this one conditional isn't so bad though.
+    def __add_data(self, label, pixels, partition):
+        if partition == 'PublicTest':
+            self.Xtest.append(pixels)
+            self.Ytest = np.column_stack((self.Ytest, label))
+        else:
+            self.Xtrain.append(pixels)
+            self.Ytrain = np.column_stack((self.Ytrain, label))
