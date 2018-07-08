@@ -5,6 +5,6 @@ class Renderer:
     def render(self, pixels):
         spm.toimage(pixels).show()
 
-    def render48by48(self, pixels):
+    def render_48_by_48(self, pixels):
         reshaped = pixels.reshape((48, 48))
         self.render(reshaped)
