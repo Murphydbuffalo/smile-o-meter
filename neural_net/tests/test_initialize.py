@@ -2,12 +2,10 @@ import unittest
 
 from lib.initialize import Initialize
 
-# Run tests like so, probs want to wrap this in a script
-# https://stackoverflow.com/questions/1896918/running-unittest-with-typical-test-directory-structure#answer-24266885
 class TestInitialize(unittest.TestCase):
     def setUp(self):
-        self.network_architecture = [2304, 250, 150, 7]
-        self.weights, self.biases = Initialize(self.network_architecture).weights_and_biases()
+        network_architecture = [2304, 250, 150, 7]
+        self.weights, self.biases = Initialize(network_architecture).weights_and_biases()
 
     def test_weights_shape(self):
         self.assertEqual(len(self.weights), 3)
