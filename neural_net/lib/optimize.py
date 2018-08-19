@@ -1,69 +1,82 @@
-import numpy as np
+from sys import argv
 
-class GradientDescent:
-    learning_rate = 0.001
+from lib.forward_prop    import ForwardProp
+from lib.cost            import Cost
+from lib.backward_prop   import BackwardProp
+from lib.optimizers.adam import Adam
+from lib.gradient_check  import GradientCheck
 
-    def __init__(self, weights, biases, weight_gradients, bias_gradients):
-        self.weights          = weights
-        self.biases           = biases
-        self.weight_gradients = weight_gradients
-        self.bias_gradients   = bias_gradients
+class Optimize:
+    regularization_strength = 0.001
 
-    def updated_parameters(self):
-        updated_weights = self.weights - (self.learning_rate * self.weight_gradients)
-        updated_biases  = self.biases  - (self.learning_rate * self.bias_gradients)
+    def __init__(self, examples, labels, optimizer):
+        self.examples     = examples
+        self.labels       = labels
+        self.optimizer    = optimizer
+        self.weights      = optimizer.weights
+        self.biases       = optimizer.biases
+        self.current_cost = 9999
+        self.costs        = []
+        self.logger       = OptimizationLogger(self)
 
-        return [updated_weights, updated_biases]
+    def run(self):
+        while self.current_cost > 0.1:
+            forward_prop = ForwardProp(self.weights, self.biases, self.examples)
+            [linear_activation, nonlinear_activation] = forward_prop.run()
 
-class Adam:
-    learning_rate = 0.0005
-    momentum_rate = 0.9
-    rms_prop_rate = 0.999
-    epsilon       = 0.00000001
+            self.linear_activation    = linear_activation
+            self.nonlinear_activation = nonlinear_activation
 
-    def __init__(self, weights, biases, weight_gradients, bias_gradients, momentum_weight_average, momentum_bias_average, rms_prop_weight_average, rms_prop_bias_average):
-        self.weights                 = weights
-        self.biases                  = biases
-        self.weight_gradients        = weight_gradients
-        self.bias_gradients          = bias_gradients
-        self.momentum_weight_average = momentum_weight_average
-        self.momentum_bias_average   = momentum_bias_average
-        self.rms_prop_weight_average = rms_prop_weight_average
-        self.rms_prop_bias_average   = rms_prop_bias_average
+            self.current_cost = self.calculate_cost(forward_prop.network_output)
+            self.costs.append(self.current_cost)
 
-    def updated_parameters(self):
-        weight_denominator = np.array([
-            np.sqrt(self.__updated_rms_prop_weight_average()[0]),
-            np.sqrt(self.__updated_rms_prop_weight_average()[1]),
-            np.sqrt(self.__updated_rms_prop_weight_average()[2])
-        ]) + self.epsilon
+            [weight_gradients, bias_gradients] = self.backward_prop()
 
-        bias_denominator = np.array([
-            np.sqrt(self.__updated_rms_prop_bias_average()[0]),
-            np.sqrt(self.__updated_rms_prop_bias_average()[1]),
-            np.sqrt(self.__updated_rms_prop_bias_average()[2])
-        ]) + self.epsilon
+            self.optimizer.update_parameters(weight_gradients, bias_gradients)
+            self.weights = self.optimizer.weights
+            self.biases  = self.optimizer.biases
 
-        updated_weights = self.weights - (self.learning_rate * self.__updated_momentum_weight_average() / weight_denominator)
-        updated_biases  = self.biases  - (self.learning_rate * self.__updated_momentum_bias_average()   / bias_denominator)
+            self.logger.log(weight_gradients)
 
-        return [
-            updated_weights,
-            updated_biases,
-            self.__updated_momentum_weight_average(),
-            self.__updated_momentum_bias_average(),
-            self.__updated_rms_prop_weight_average(),
-            self.__updated_rms_prop_bias_average()
-        ]
+        return {
+            'costs':   costs,
+            'weights': self.weights,
+            'biases':  self.biases
+        }
 
-    def __updated_momentum_weight_average(self):
-        return (self.momentum_rate * self.momentum_weight_average) + ((1 - self.momentum_rate) * self.weight_gradients)
+    def current_cost(self):
+        return self.costs[-1]
 
-    def __updated_momentum_bias_average(self):
-        return (self.momentum_rate * self.momentum_bias_average) + ((1 - self.momentum_rate) * self.bias_gradients)
+    def backward_prop(self):
+        return BackwardProp(self.weights,
+                            self.linear_activation,
+                            self.nonlinear_activation,
+                            self.labels,
+                            self.regularization_strength).run()
 
-    def __updated_rms_prop_weight_average(self):
-        return (self.rms_prop_rate * self.rms_prop_weight_average) + ((1 - self.rms_prop_rate) * np.square(self.weight_gradients))
+    def calculate_cost(self, network_output):
+        return Cost(network_output,
+                    self.labels,
+                    self.weights,
+                    self.regularization_strength).cross_entropy_loss()
 
-    def __updated_rms_prop_bias_average(self):
-        return (self.rms_prop_rate * self.rms_prop_bias_average) + ((1 - self.rms_prop_rate) * np.square(self.bias_gradients))
+class OptimizationLogger:
+    def __init__(self, optimizer):
+        self.optimizer = optimizer
+        self.iteration = 0
+
+    def log(self, weight_gradients):
+        if (self.iteration % 10) == 0:
+            print("Iteration #", self.iteration)
+            print("Cost is", self.optimizer.current_cost)
+
+        if len(argv) > 1 and argv[1] == '--check-gradients' and self.iteration % 100 == 0:
+            check = GradientCheck(self.optimizer.weights,
+                                  self.optimizer.biases,
+                                  weight_gradients,
+                                  self.optimizer.examples,
+                                  self.optimizer.labels)
+
+            print("Are the analytic gradients about the same as the numeric gradients?", check.run())
+
+        self.iteration += 1

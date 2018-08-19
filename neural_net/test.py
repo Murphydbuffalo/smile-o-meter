@@ -1,37 +1,18 @@
 import numpy as np
 
-from lib.data.loader  import Loader
-from lib.forward_prop import ForwardProp
-from lib.cost         import Cost
+from lib.data.sources.fer_csv import FER_CSV
+from lib.data.formatter       import Formatter
+from lib.predict              import Predict
 
-d       = Loader().load()
-lambd   = 0
-X_test  = d.Xtest_norm
-Y_test  = d.Ytest
+pixels_csv = FER_CSV().load_data()
+data       = Formatter(pixels_csv).run()
+weights    = np.load('./output/learned_weights.npy')
+biases     = np.load('./output/learned_biases.npy')
+predictor  = Predict(data.test_examples, data.test_labels, weights, biases)
 
-weights = np.load('./output/learned_weights.npy')
-biases  = np.load('./output/learned_biases.npy')
+predictor.run()
 
-Z, A = ForwardProp(weights, biases, X_test).run()
-c    = Cost(A[-1], Y_test, weights, lambd).cross_entropy_loss()
-
-print("Average cost:", c)
-
-predictions           = (A[-1] == np.max(A[-1], axis=0)) * 1
-m                     = Y_test.shape[1]
-correct_predictions   = 0
-incorrect_predictions = 0
-
-for i in range(m):
-    if (np.argmax(predictions[:,i]) == np.argmax(Y_test[:,i])):
-        correct_predictions   += 1
-    else:
-        incorrect_predictions += 1
-
-total_predictions = correct_predictions + incorrect_predictions
-
-print("m:",                     m)
-print("total_predictions:",     total_predictions)
-print("correct_predictions:",   correct_predictions)
-print("incorrect_predictions:", incorrect_predictions)
-print("percent correct:",       correct_predictions / total_predictions)
+print("Average cost:",                  predictor.cost)
+print("Number of examples:",            predictor.num_examples)
+print("Number of correct predictions:", predictor.num_correct)
+print("Percent correct:",               predictor.percent_correct)

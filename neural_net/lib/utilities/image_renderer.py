@@ -1,7 +1,7 @@
 import numpy      as np
 import scipy.misc as spm
 
-class Renderer:
+class ImageRenderer:
     def render(self, pixels):
         spm.toimage(pixels).show()
 

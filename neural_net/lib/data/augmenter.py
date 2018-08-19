@@ -1,7 +1,7 @@
 import numpy as np
 from imgaug import augmenters as ia
 
-class Augment:
+class Augmenter:
     def __init__(self, images):
         self.images = images
         self.m      = images.shape[1]

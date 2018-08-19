@@ -1,37 +1,38 @@
 import numpy as np
 
 class ForwardProp:
-    def __init__(self, weights, biases, X):
+    def __init__(self, weights, biases, examples):
         self.weights               = weights
         self.biases                = biases
-        self.X                     = X
+        self.examples              = examples
         self.linear_activations    = []
-        self.nonlinear_activations = [X]
+        self.nonlinear_activations = [examples]
 
     def run(self):
-        A = self.X
-
         for i in range(len(self.weights)):
-            Z = np.dot(self.weights[i], A)  + self.biases[i]
-            A = self.__relu(Z)
+            linear_activation    = np.dot(self.weights[i], self.nonlinear_activations[i])  + self.biases[i]
+            nonlinear_activation = self.__relu(linear_activation)
 
-            self.linear_activations.append(Z)
-            self.nonlinear_activations.append(A)
+            self.linear_activations.append(linear_activation)
+            self.nonlinear_activations.append(nonlinear_activation)
 
-        self.nonlinear_activations[-1] = self.__softmax_activation(Z)
+        self.network_output            = self.__softmax_activation(linear_activation)
+        self.nonlinear_activations[-1] = self.network_output
 
         return [self.linear_activations, self.nonlinear_activations]
 
-    def __relu(self, Z):
-        # NOTE: np.maximum is NOT the same as np.max, which find the maximum value
-        # in the matrix (or in each row/column of the matrix).
-        # np.maximum maps the given array element-wise, returning the max of each
-        # element and the provided second arg (0 in this case)
-        return np.maximum(Z, 0)
+    def __relu(self, linear_activation):
+        # NOTE: np.maximum is NOT the same as np.max
+        # np.max finds the maximum value in the matrix (or in each row/column
+        # of the matrix)
+        #
+        # np.maximum maps the given array element-wise, returning the max of
+        # each element and the provided second arg (0 in this case)
+        return np.maximum(linear_activation, 0)
 
-    def __softmax(self, v):
-        exponentials = np.exp(v - np.max(v, axis = 0))
+    def __softmax(self, vector):
+        exponentials = np.exp(vector - np.max(vector, axis = 0))
         return exponentials / np.sum(exponentials)
 
-    def __softmax_activation(self, Z):
-        return np.atleast_2d(np.apply_along_axis(self.__softmax, 0, Z))
+    def __softmax_activation(self, linear_activation):
+        return np.atleast_2d(np.apply_along_axis(self.__softmax, 0, linear_activation))
