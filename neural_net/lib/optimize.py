@@ -22,7 +22,7 @@ class Optimize:
     def run(self):
         while self.current_cost > 0.1:
             forward_prop = ForwardProp(self.weights, self.biases, self.examples)
-            [linear_activation, nonlinear_activation] = forward_prop.run()
+            linear_activation, nonlinear_activation = forward_prop.run()
 
             self.linear_activation    = linear_activation
             self.nonlinear_activation = nonlinear_activation
@@ -30,7 +30,7 @@ class Optimize:
             self.current_cost = self.calculate_cost(forward_prop.network_output)
             self.costs.append(self.current_cost)
 
-            [weight_gradients, bias_gradients] = self.backward_prop()
+            weight_gradients, bias_gradients = self.backward_prop()
 
             self.optimizer.update_parameters(weight_gradients, bias_gradients)
             self.weights = self.optimizer.weights
