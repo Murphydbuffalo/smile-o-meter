@@ -10,7 +10,8 @@ class Timer:
         self.time_elapsed = datetime(1,1,1) + seconds
 
     def string(self):
-        return ":".join([str(el) for el in [self.day, self.hour, self.minute, self.second]])
+        time_components = [self.day(), self.hour(), self.minute(), self.second()]
+        return ":".join([str(el) for el in time_components])
 
     def day(self):
         return self.time_elapsed.day - 1

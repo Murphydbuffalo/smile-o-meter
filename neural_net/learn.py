@@ -24,11 +24,11 @@ time_elapsed = timer.time_elapsed
 print(f"Total training was {timer.string()}")
 
 print("Saving learned parameters...")
-np.save('./output/learned_weights', results.weights)
-np.save('./output/learned_biases', results.biases)
+np.save('./output/learned_weights', results['weights'])
+np.save('./output/learned_biases', results['biases'])
 
 print("Saving statistics for normalization of test data...")
 np.save('./output/training_set_means', data.training_set_means)
 np.save('./output/zero_mean_training_set_standard_deviations', data.zero_mean_training_set_standard_deviations)
 
-Graph(ylabel = "Cost", xlabel = "Iteration", data = results.costs).render()
+Graph(ylabel = "Cost", xlabel = "Iteration", data = results['costs']).render()

@@ -39,7 +39,7 @@ class Optimize:
             self.logger.log(weight_gradients)
 
         return {
-            'costs':   costs,
+            'costs':   self.costs,
             'weights': self.weights,
             'biases':  self.biases
         }
