@@ -9,7 +9,10 @@ class Cost:
         self.lambd       = lambd
 
     def cross_entropy_loss(self):
-        return (np.sum(-np.log(self.predictions) * self.labels) / self.m) + self.l2_regularization_loss()
+        inverse_log         = -np.log(self.predictions) * self.labels
+        average_inverse_log = np.sum(inverse_log) / self.m
+
+        return average_inverse_log + self.l2_regularization_loss()
 
     def l2_regularization_loss(self):
         squared_weights = np.square(self.weights)
