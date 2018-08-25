@@ -12,7 +12,7 @@ predictor  = Predict(data.test_examples, data.test_labels, weights, biases)
 
 predictor.run()
 
-print("Average cost:",                  predictor.cost)
 print("Number of examples:",            predictor.num_examples)
-print("Number of correct predictions:", predictor.num_correct)
-print("Percent correct:",               predictor.percent_correct)
+print("Number of correct predictions:", predictor.num_correct())
+print("Percent correct:",               predictor.percent_correct())
+print("Average cost:",                  predictor.cost())

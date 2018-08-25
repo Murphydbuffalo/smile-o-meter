@@ -19,13 +19,17 @@ class Predict:
         forward_prop.run()
         self.network_output = forward_prop.network_output
 
-        self.cost = Cost(self.network_output,
-                         self.labels,
-                         self.weights,
-                         self.regularization_strength).cross_entropy_loss()
+    def cost(self):
+        return Cost(self.network_output,
+                    self.labels,
+                    self.weights,
+                    self.regularization_strength).cross_entropy_loss()
 
-        self.num_correct     = (self.actual_classes == self.predicted_classes()).sum()
-        self.percent_correct = self.num_correct / self.num_examples
+    def num_correct(self):
+        return (self.actual_classes == self.predicted_classes()).sum()
+
+    def percent_correct(self):
+        return self.num_correct() / self.num_examples
 
     def predicted_classes(self):
         return self.predictions().argmax(axis=0)
