@@ -9,10 +9,13 @@ from lib.gradient_check  import GradientCheck
 class Optimize:
     regularization_strength = 0.001
 
-    def __init__(self, examples, labels, optimizer):
-        self.examples     = examples
-        self.labels       = labels
-        self.optimizer    = optimizer
+    def __init__(self, examples, labels, optimizer, cost_threshold = 0.25, logging_enabled = True):
+        self.examples        = examples
+        self.labels          = labels
+        self.optimizer       = optimizer
+        self.cost_threshold  = cost_threshold
+        self.logging_enabled = logging_enabled
+
         self.weights      = optimizer.weights
         self.biases       = optimizer.biases
         self.current_cost = 9999
@@ -20,7 +23,7 @@ class Optimize:
         self.logger       = OptimizationLogger(self)
 
     def run(self):
-        while self.current_cost > 0.1:
+        while self.current_cost > self.cost_threshold:
             forward_prop = ForwardProp(self.weights, self.biases, self.examples)
             linear_activation, nonlinear_activation = forward_prop.run()
 
@@ -36,7 +39,8 @@ class Optimize:
             self.weights = self.optimizer.weights
             self.biases  = self.optimizer.biases
 
-            self.logger.log(weight_gradients)
+            if self.logging_enabled:
+                self.logger.log(weight_gradients)
 
         return {
             'costs':   self.costs,
