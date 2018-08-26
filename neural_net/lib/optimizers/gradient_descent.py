@@ -7,8 +7,6 @@ class GradientDescent:
         self.weights = weights
         self.biases  = biases
 
-    def updated_parameters(self, weight_gradients, bias_gradients):
+    def update_parameters(self, weight_gradients, bias_gradients):
         self.weights = self.weights - (self.learning_rate * weight_gradients)
         self.biases  = self.biases  - (self.learning_rate * bias_gradients)
-
-        return true
