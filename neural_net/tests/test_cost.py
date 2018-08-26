@@ -14,8 +14,13 @@ class TestCost(unittest.TestCase):
             [0]  # row/class 2
         ])
 
-        self.weights                 = np.array([np.zeros((3, 3)), np.zeros((3, 3))])
-        self.regularization_strength = 0
+        self.weights = np.array([
+            [1], [1], [1],
+            [1], [1], [1],
+            [1], [1], [1]
+        ])
+
+        self.regularization_strength = 0.001
 
     def test_cost_is_very_high_for_incorrect_predictions_with_high_confidence(self):
         predictions = np.array([
@@ -70,6 +75,27 @@ class TestCost(unittest.TestCase):
 
         self.assertTrue(cost < 1.5)
         self.assertTrue(cost > 1.0)
+
+    def test_cost_increases_as_magnitude_of_weights_increases(self):
+        predictions = np.array([
+            [0.50], # the network predicts a 50% chance that the example is of class 0
+            [0.25],
+            [0.25]
+        ])
+
+        weights = np.array([
+            [10], [10], [10],
+            [10], [10], [10],
+            [10], [10], [10]
+        ])
+
+        cost = Cost(predictions,
+                    self.labels,
+                    weights,
+                    self.regularization_strength).cross_entropy_loss()
+
+        self.assertTrue(cost < 2.0)
+        self.assertTrue(cost > 1.5)
 
 if __name__ == '__main__':
     unittest.main()
