@@ -4,7 +4,6 @@ from lib.forward_prop    import ForwardProp
 from lib.cost            import Cost
 from lib.backward_prop   import BackwardProp
 from lib.optimizers.adam import Adam
-from lib.gradient_check  import GradientCheck
 
 class Optimize:
     regularization_strength = 0.001
@@ -73,14 +72,5 @@ class OptimizationLogger:
         if (self.iteration % 10) == 0:
             print("Iteration #", self.iteration)
             print("Cost is", self.optimizer.current_cost)
-
-        if len(argv) > 1 and argv[1] == '--check-gradients' and self.iteration % 100 == 0:
-            check = GradientCheck(self.optimizer.weights,
-                                  self.optimizer.biases,
-                                  weight_gradients,
-                                  self.optimizer.examples,
-                                  self.optimizer.labels)
-
-            print("Are the analytic gradients about the same as the numeric gradients?", check.run())
 
         self.iteration += 1

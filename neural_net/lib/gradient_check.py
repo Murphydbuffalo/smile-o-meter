@@ -1,62 +1,63 @@
 import numpy as np
-from lib.forward_prop  import ForwardProp
-from lib.cost          import Cost
+
+from lib.forward_prop import ForwardProp
+from lib.cost         import Cost
 
 class GradientCheck:
-    def __init__(self, weights, biases, weight_gradients, X, Y):
-        self.weights          = weights
-        self.biases           = biases
-        self.weight_gradients = weight_gradients
-        self.X                = X
-        self.Y                = Y
-        self.epsilon          = 0.00001
-
-    def run(self):
-        acceptable_delta   = self.epsilon
-        numeric_gradients  = self.__numeric_gradients()
-        analytic_gradients = self.weight_gradients
-        delta1             = np.abs(numeric_gradients[-2] - analytic_gradients[-2])
-        delta2             = np.abs(numeric_gradients[-1] - analytic_gradients[-1])
-
-        print("numeric_gradients[-2]:", numeric_gradients[-2])
-        print("analytic_gradients[-2]:", analytic_gradients[-2])
-
-        print("numeric_gradients[-1]:", numeric_gradients[-1])
-        print("analytic_gradients[-1]:", analytic_gradients[-1])
-
-        print("delta1:", delta1)
-        print("delta2:", delta2)
-
-        return (delta1.max() <= acceptable_delta) and (delta2.max() <= acceptable_delta)
-
-    def __numeric_gradients(self):
-        weights           = np.copy(self.weights)
-        numeric_gradients = []
+    def __init__(self, weights, biases, examples, labels, regularization_strength):
+        self.weights                 = weights
+        self.biases                  = biases
+        self.examples                = examples
+        self.labels                  = labels
+        self.regularization_strength = regularization_strength
+        self.epsilon                 = 0.00001
+        self.gradients               = []
 
         for i in range(len(weights)):
-            numeric_gradients.append(np.zeros(weights[i].shape))
+            self.gradients.append(np.zeros(weights[i].shape))
 
-        # Skip weights connecting input layer to 1st hidden layer because there
-        # are so many it takes hours to calculate them all.
-        # Not to mention, if you know the second-to-last layer's gradients are
-        # correct, then you can confident that all hidden layer gradients are correct
-        # because they are calculated the same way.
-        for layer in range(1, len(weights)):
-            for column in range(weights[layer].shape[0]):
-                for row in range(weights[layer].shape[1]):
-                    original_weight = weights[layer][column][row]
+    def numeric_gradients(self):
+        for layer in range(0, len(self.weights)):
+            for row in range(self.num_rows(layer)):
+                for column in range(self.num_columns(layer)):
+                    original_weight = self.weights[layer][row][column]
 
-                    weights[layer][column][row] = original_weight + self.epsilon
-                    Zplus, Aplus                = ForwardProp(weights, self.biases, self.X).run()
+                    self.gradients[layer][row][column] = self.numeric_gradient(original_weight,
+                                                                               layer,
+                                                                               row,
+                                                                               column)
+                    self.weights[layer][row][column] = original_weight
 
+        return self.gradients
 
-                    weights[layer][column][row] = original_weight - self.epsilon
-                    Zminus, Aminus              = ForwardProp(weights, self.biases, self.X).run()
+    def numeric_gradient(self, weight, layer, row, column):
+        self.weights[layer][row][column]       = weight + self.epsilon
+        network_output_with_weight_adjusted_up = self.network_output()
 
-                    cost_plus  = Cost(Aplus[-1],  self.Y).cross_entropy_loss()
-                    cost_minus = Cost(Aminus[-1], self.Y).cross_entropy_loss()
+        self.weights[layer][row][column]         = weight - self.epsilon
+        network_output_with_weight_adjusted_down = self.network_output()
 
-                    numeric_gradients[layer][column][row] = (cost_plus - cost_minus) / (2 * self.epsilon)
-                    weights[layer][column][row]           = original_weight # paranoia
+        cost_with_weight_adjusted_up   = self.cost(network_output_with_weight_adjusted_up)
+        cost_with_weight_adjusted_down = self.cost(network_output_with_weight_adjusted_down)
 
-        return numeric_gradients
+        cost_difference = (cost_with_weight_adjusted_up - cost_with_weight_adjusted_down)
+
+        return cost_difference / (2 * self.epsilon)
+
+    def cost(self, network_output):
+        return Cost(network_output,
+                    self.labels,
+                    self.weights,
+                    self.regularization_strength).cross_entropy_loss()
+
+    def network_output(self):
+        forward_prop = ForwardProp(self.weights, self.biases, self.examples)
+        forward_prop.run()
+
+        return forward_prop.network_output
+
+    def num_rows(self, layer):
+        return self.weights[layer].shape[0]
+
+    def num_columns(self, layer):
+        return self.weights[layer].shape[1]
