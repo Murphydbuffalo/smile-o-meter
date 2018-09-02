@@ -1,10 +1,9 @@
 import unittest
 import numpy as np
-import pdb
 
-from lib.backward_prop  import BackwardProp
-from lib.forward_prop   import ForwardProp
-from lib.gradient_check import GradientCheck
+from lib.forward_prop  import ForwardProp
+from lib.cost          import Cost
+from lib.backward_prop import BackwardProp
 
 num_input_features     = 10
 num_hidden_layer_nodes = 5
@@ -39,29 +38,12 @@ class TestBackwardProp(unittest.TestCase):
                                           labels,
                                           regularization_strength)
 
-        gradient_check = GradientCheck(weights,
-                                       biases,
-                                       examples,
-                                       labels,
-                                       regularization_strength)
+        self.numeric_gradients = NumericGradients(weights,
+                                                  biases,
+                                                  examples,
+                                                  labels,
+                                                  regularization_strength).calculate()
 
-        self.numeric_gradients = gradient_check.numeric_gradients()
-
-    # The job of `BackwardProp` is to efficiently calculate gradients (
-    # derivatives for a vector/array). A neural network can easily have many
-    # thousands of weights, and needs to calculate the derivative for all of
-    # in order to "learn" (update the weights in such a way that the network
-    # gets better at its assigned task). These weight updates will likely need
-    # to happen thousands of times before the network becomes suitably effective.
-    #
-    # Therefore it becomes prohibitively expensive to calculate the *numeric*
-    # gradients for each individual weight on every iteration. "Numeric" meaning
-    # calcuating the approximate derivative based on the two-sided limit formula
-    # `(f(x + e) - f(x - e)) / 2e`.
-    #
-    # Instead, we can calculate the "analytic" derivatives, which means
-    # algebraically calculating the derivatives for all weights in a layer at
-    # once, via the chain rule.
     def test_analytics_gradients_are_the_same_as_numeric_gradients(self):
         weight_gradients, bias_gradients = self.backward_prop.run()
 
@@ -80,6 +62,80 @@ class TestBackwardProp(unittest.TestCase):
                 atol = 0.005
             )
         )
+
+# The job of `BackwardProp` is to *efficiently* calculate gradients
+# (derivatives for a vector/array). A neural network can easily have many
+# thousands of weights, and needs to calculate the derivative for all of
+# in order to "learn" (update the weights in such a way that the network
+# gets better at its assigned task). These weight updates will likely need
+# to happen thousands of times before the network becomes suitably effective.
+#
+# Therefore it becomes prohibitively expensive to calculate the *numeric*
+# gradients for each individual weight on every iteration. "Numeric" meaning
+# calcuating the approximate derivative based on the two-sided limit formula
+# `(f(x + e) - f(x - e)) / 2e`.
+#
+# Instead, we can calculate the "analytic" derivatives, which means
+# algebraically calculating the derivatives for all weights in a layer at
+# once, via the chain rule.
+class NumericGradients:
+    def __init__(self, weights, biases, examples, labels, regularization_strength):
+        self.weights                 = weights
+        self.biases                  = biases
+        self.examples                = examples
+        self.labels                  = labels
+        self.regularization_strength = regularization_strength
+        self.epsilon                 = 0.00001
+        self.gradients               = []
+
+        for i in range(len(weights)):
+            self.gradients.append(np.zeros(weights[i].shape))
+
+    def calculate(self):
+        for layer in range(0, len(self.weights)):
+            for row in range(self.num_rows(layer)):
+                for column in range(self.num_columns(layer)):
+                    original_weight = self.weights[layer][row][column]
+
+                    self.gradients[layer][row][column] = self.numeric_gradient(original_weight,
+                                                                               layer,
+                                                                               row,
+                                                                               column)
+                    self.weights[layer][row][column] = original_weight
+
+        return self.gradients
+
+    def numeric_gradient(self, weight, layer, row, column):
+        self.weights[layer][row][column]       = weight + self.epsilon
+        network_output_with_weight_adjusted_up = self.network_output()
+
+        self.weights[layer][row][column]         = weight - self.epsilon
+        network_output_with_weight_adjusted_down = self.network_output()
+
+        cost_with_weight_adjusted_up   = self.cost(network_output_with_weight_adjusted_up)
+        cost_with_weight_adjusted_down = self.cost(network_output_with_weight_adjusted_down)
+
+        cost_difference = (cost_with_weight_adjusted_up - cost_with_weight_adjusted_down)
+
+        return cost_difference / (2 * self.epsilon)
+
+    def cost(self, network_output):
+        return Cost(network_output,
+                    self.labels,
+                    self.weights,
+                    self.regularization_strength).cross_entropy_loss()
+
+    def network_output(self):
+        forward_prop = ForwardProp(self.weights, self.biases, self.examples)
+        forward_prop.run()
+
+        return forward_prop.network_output
+
+    def num_rows(self, layer):
+        return self.weights[layer].shape[0]
+
+    def num_columns(self, layer):
+        return self.weights[layer].shape[1]
 
 if __name__ == '__main__':
     unittest.main()
