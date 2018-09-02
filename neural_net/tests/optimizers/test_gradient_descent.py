@@ -36,8 +36,13 @@ class TestGradientDescent(unittest.TestCase):
 
         expected_updated_weights = self.weights - GradientDescent.learning_rate
 
-        self.assertTrue(np.isclose(self.gradient_descent.weights[0], expected_updated_weights[0]).all())
-        self.assertTrue(np.isclose(self.gradient_descent.weights[1], expected_updated_weights[1]).all())
+        self.assertTrue(
+            np.allclose(self.gradient_descent.weights[0], expected_updated_weights[0])
+        )
+
+        self.assertTrue(
+            np.allclose(self.gradient_descent.weights[1], expected_updated_weights[1])
+        )
 
 if __name__ == '__main__':
     unittest.main()
