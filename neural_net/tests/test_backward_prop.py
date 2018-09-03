@@ -4,6 +4,7 @@ import numpy as np
 from lib.forward_prop  import ForwardProp
 from lib.cost          import Cost
 from lib.backward_prop import BackwardProp
+from lib.optimizers.gradient_descent import GradientDescent
 
 num_input_features     = 10
 num_hidden_layer_nodes = 5
@@ -12,6 +13,12 @@ num_examples           = 1000
 
 class TestBackwardProp(unittest.TestCase):
     def setUp(self):
+        random_values                = np.random.randn(num_classes, num_examples)
+        self.labels                  = (random_values == random_values.max(axis=0)) * 1
+        self.examples                = np.random.randn(num_input_features, num_examples)
+        self.regularization_strength = 0.001
+
+    def test_analytic_gradients_are_close_to_numeric_gradients(self):
         weights = np.array([
             np.random.randn(num_hidden_layer_nodes, num_input_features),
             np.random.randn(num_classes, num_hidden_layer_nodes),
@@ -22,46 +29,48 @@ class TestBackwardProp(unittest.TestCase):
             np.zeros((num_classes, 1)),
         ])
 
-        random_values = np.random.randn(num_classes, num_examples)
-        labels = (random_values == random_values.max(axis=0)) * 1
+        for i in range(0, 5):
+            print('Testing backprop, iteration', i + 1)
 
-        examples = np.random.randn(num_input_features, num_examples)
+            forward_prop = ForwardProp(weights, biases, self.examples)
+            linear_activations, nonlinear_activations = forward_prop.run()
 
-        forward_prop = ForwardProp(weights, biases, examples)
-        linear_activations, nonlinear_activations = forward_prop.run()
+            backward_prop = BackwardProp(weights,
+                                         linear_activations,
+                                         nonlinear_activations,
+                                         self.labels,
+                                         self.regularization_strength)
 
-        regularization_strength = 0.001
+            gradient_check = GradientCheck(weights,
+                                           biases,
+                                           self.examples,
+                                           self.labels,
+                                           self.regularization_strength)
 
-        self.backward_prop = BackwardProp(weights,
-                                          linear_activations,
-                                          nonlinear_activations,
-                                          labels,
-                                          regularization_strength)
+            weight_gradients, bias_gradients = backward_prop.run()
+            numeric_gradients                = gradient_check.numeric_gradients()
 
-        self.numeric_gradients = NumericGradients(weights,
-                                                  biases,
-                                                  examples,
-                                                  labels,
-                                                  regularization_strength).calculate()
-
-    def test_analytics_gradients_are_the_same_as_numeric_gradients(self):
-        weight_gradients, bias_gradients = self.backward_prop.run()
-
-        self.assertTrue(
-            np.allclose(
-                weight_gradients[-1],
-                self.numeric_gradients[-1],
-                atol = 0.005
+            self.assertTrue(
+                np.allclose(
+                    weight_gradients[-1],
+                    numeric_gradients[-1],
+                    atol = 0.005
+                )
             )
-        )
 
-        self.assertTrue(
-            np.allclose(
-                weight_gradients[-2],
-                self.numeric_gradients[-2],
-                atol = 0.005
+            self.assertTrue(
+                np.allclose(
+                    weight_gradients[-2],
+                    numeric_gradients[-2],
+                    atol = 0.005
+                )
             )
-        )
+
+            optimizer = GradientDescent(weights, biases)
+            optimizer.update_parameters(weight_gradients, bias_gradients)
+            weights = optimizer.weights
+            biases  = optimizer.biases
+
 
 # The job of `BackwardProp` is to *efficiently* calculate gradients
 # (derivatives for a vector/array). A neural network can easily have many
@@ -78,7 +87,7 @@ class TestBackwardProp(unittest.TestCase):
 # Instead, we can calculate the "analytic" derivatives, which means
 # algebraically calculating the derivatives for all weights in a layer at
 # once, via the chain rule.
-class NumericGradients:
+class GradientCheck:
     def __init__(self, weights, biases, examples, labels, regularization_strength):
         self.weights                 = weights
         self.biases                  = biases
@@ -91,7 +100,7 @@ class NumericGradients:
         for i in range(len(weights)):
             self.gradients.append(np.zeros(weights[i].shape))
 
-    def calculate(self):
+    def numeric_gradients(self):
         for layer in range(0, len(self.weights)):
             for row in range(self.num_rows(layer)):
                 for column in range(self.num_columns(layer)):
