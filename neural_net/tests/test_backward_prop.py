@@ -1,9 +1,9 @@
 import unittest
 import numpy as np
 
-from lib.forward_prop  import ForwardProp
-from lib.cost          import Cost
-from lib.backward_prop import BackwardProp
+from lib.forward_prop                import ForwardProp
+from lib.cost                        import Cost
+from lib.backward_prop               import BackwardProp
 from lib.optimizers.gradient_descent import GradientDescent
 
 num_input_features     = 10
@@ -29,7 +29,7 @@ class TestBackwardProp(unittest.TestCase):
             np.zeros((num_classes, 1)),
         ])
 
-        for i in range(0, 5):
+        for i in range(0, 3):
             print('Testing backprop, iteration', i + 1)
 
             forward_prop = ForwardProp(weights, biases, self.examples)
