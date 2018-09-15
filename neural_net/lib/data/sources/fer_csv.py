@@ -2,60 +2,50 @@ import numpy as np
 import csv
 import os
 
+# FER = "Facial Expression Recognition"
+# See https://www.kaggle.com/c/challenges-in-representation-learning-facial-expression-recognition-challenge/data
 class FER_CSV:
-    filename = './lib/data/sources/fer2013.csv'
+    def __init__(self, filename = './lib/data/sources/fer2013.csv'):
+        self.file = open(filename)
+        self.csv  = csv.DictReader(self.file)
+        self.data = {
+            'Training':    { 'examples': [], 'labels': [] },
+            'PublicTest':  { 'examples': [], 'labels': [] },
+            'PrivateTest': { 'examples': [], 'labels': [] }
+        }
 
-    def __init__(self):
-        self.csv               = csv.DictReader(open(self.filename))
-        self.training_examples = []
-        self.test_examples     = []
-        self.training_labels   = self.k_dimensional_array()
-        self.test_labels       = self.k_dimensional_array()
+    def load_data(self):
+        try:
+            for row in self.csv:
+                data_set = row['Usage']
+                pixels   = row['pixels'].split()
+                label    = self.label(row)
 
-    def load_data(self, print_progress = False):
-        for index, row in enumerate(self.csv):
-            partition = row['Usage']
-            label     = self.label(row)
-            pixels    = self.pixels(row)
+                self.data[data_set]['examples'].append(pixels)
+                self.data[data_set]['labels'].append(label)
 
-            if print_progress == True and index % 1000 == 0:
-                print("partition is", partition)
-                print("label is", label)
-                print("shape of pixels is", pixels.shape)
-                print("pixels are", pixels)
+            self.training_examples   = self.array(self.data['Training']['examples'])
+            self.training_labels     = self.array(self.data['Training']['labels']).reshape((7, -1))
+            self.validation_examples = self.array(self.data['PublicTest']['examples'])
+            self.validation_labels   = self.array(self.data['PublicTest']['labels']).reshape((7, -1))
+            self.test_examples       = self.array(self.data['PrivateTest']['examples'])
+            self.test_labels         = self.array(self.data['PrivateTest']['labels']).reshape((7, -1))
 
-            self.add_data(label, pixels, partition)
+            return self
+        finally:
+            self.file.close()
 
-
-        self.training_examples = np.array(self.training_examples).T
-        self.test_examples     = np.array(self.test_examples).T
-
-        return self
-
-    # Where `k` is the number of classes in our classifier/data set.
-    def k_dimensional_array(self):
-        return np.array([[], [], [], [], [], [], []])
-
-    # Convert an integer into a "one-hot" vector of 0s and 1s, with the sole 1 at
-    # the index corresponding to the integer.
+    # Convert an integer into a "one-hot" vector of 0s and 1s, with the sole 1
+    # at the index corresponding to the integer. Eg, with 7 possible classes the
+    # zero-indexed label `3` becomes `[0, 0, 0, 1, 0, 0, 0]`. The neural network
+    # outputs its predictions as vectors of this form, so it's easiest to convert
+    # the labels to the same form for comparison.
     def label(self, row):
-        one_hot_vector            = np.zeros((7, 1))
+        one_hot_vector            = [[0],[0],[0],[0],[0],[0],[0]]
         fer_label                 = int(row['emotion'])
-        one_hot_vector[fer_label] = 1
+        one_hot_vector[fer_label] = [1]
 
         return one_hot_vector
 
-    def pixels(self, row):
-        return np.array(row['pixels'].split(), 'int')
-
-    # TODO: REFACTOR
-    # Can you build these arrays in a cleaner way via better use of Numpy?
-    # Or at least build them in a consistent way instead of using both `append`
-    # and `column_stack`?
-    def add_data(self, label, pixels, partition):
-        if partition == 'PublicTest':
-            self.test_examples.append(pixels)
-            self.test_labels = np.column_stack((self.test_labels, label))
-        else:
-            self.training_examples.append(pixels)
-            self.training_labels = np.column_stack((self.training_labels, label))
+    def array(self, list):
+        return np.array(list, 'uint8').T
