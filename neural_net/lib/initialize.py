@@ -16,12 +16,12 @@ class Initialize:
             num_inputs  = self.network_shape[i]
             num_outputs = self.network_shape[i + 1]
 
-            weights.append(self.__initialize_weights(num_inputs, num_outputs))
-            biases.append(self.__initialize_biases(num_outputs))
+            weights.append(self.initialize_weights(num_inputs, num_outputs))
+            biases.append(self.initialize_biases(num_outputs))
 
         return [np.array(weights), np.array(biases)]
 
-    def __initialize_weights(self, num_inputs, num_outputs):
+    def initialize_weights(self, num_inputs, num_outputs):
         if self.algorithm == 'xavier':
             numerator = self.xavier_numerator
         else:
@@ -29,5 +29,5 @@ class Initialize:
 
         return np.random.randn(num_outputs, num_inputs) * np.sqrt(numerator / num_inputs)
 
-    def __initialize_biases(self, num_outputs):
+    def initialize_biases(self, num_outputs):
        return np.zeros((num_outputs, 1))
