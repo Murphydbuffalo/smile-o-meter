@@ -1,15 +1,15 @@
 import numpy as np
 
-from lib.data.sources.fer_csv import FER_CSV
-from lib.data.formatter       import Formatter
-from lib.initialize           import Initialize
-from lib.optimize             import Optimize
-from lib.optimizers.adam      import Adam
-from lib.utilities.timer      import Timer
-from lib.utilities.graph      import Graph
+from lib.data.data       import Data
+from lib.data.formatter  import Formatter
+from lib.initialize      import Initialize
+from lib.optimize        import Optimize
+from lib.optimizers.adam import Adam
+from lib.utilities.timer import Timer
+from lib.utilities.graph import Graph
 
-pixels_csv           = FER_CSV().load_data()
-data                 = Formatter(pixels_csv).run()
+pixels               = Data().load()
+data                 = Formatter(pixels).run()
 network_architecture = [data.num_features, 250, 150, data.num_classes]
 weights, biases      = Initialize(network_architecture).weights_and_biases()
 timer                = Timer()
