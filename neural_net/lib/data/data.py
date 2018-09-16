@@ -2,43 +2,43 @@ import numpy as np
 import csv
 import os
 
-# FER = "Facial Expression Recognition"
-# See https://www.kaggle.com/c/challenges-in-representation-learning-facial-expression-recognition-challenge/data
-class FER_CSV:
+# We're using the Facial Expression Recognition ("FER") dataset from Kaggle:
+# https://www.kaggle.com/c/challenges-in-representation-learning-facial-expression-recognition-challenge/data
+class Data:
     num_classes = 7
 
     def __init__(self, filename = './lib/data/sources/fer2013.csv'):
-        self.file = open(filename)
-        self.csv  = csv.DictReader(self.file)
-        self.data = {
+        self.file     = open(filename)
+        self.csv      = csv.DictReader(self.file)
+        self.datasets = {
             'Training':    { 'examples': [], 'labels': [] },
-            'PublicTest':  { 'examples': [], 'labels': [] },
-            'PrivateTest': { 'examples': [], 'labels': [] }
+            'PrivateTest': { 'examples': [], 'labels': [] },
+            'PublicTest':  { 'examples': [], 'labels': [] }
         }
 
-    def load_data(self):
+    def load(self):
         try:
             for row in self.csv:
-                data_set = row['Usage']
-                pixels   = row['pixels'].split()
-                label    = self.label(row)
+                dataset = row['Usage']
+                pixels  = row['pixels'].split()
+                label   = self.label(row)
 
-                self.data[data_set]['examples'].append(pixels)
-                self.data[data_set]['labels'].append(label)
+                self.datasets[dataset]['examples'].append(pixels)
+                self.datasets[dataset]['labels'].append(label)
 
-            self.training_examples = self.array(self.data['Training']['examples'])
+            self.training_examples = self.array(self.datasets['Training']['examples'])
             self.training_labels   = self.flatten_labels(
-                self.array(self.data['Training']['labels'])
+                self.array(self.datasets['Training']['labels'])
             )
 
-            self.validation_examples = self.array(self.data['PublicTest']['examples'])
+            self.validation_examples = self.array(self.datasets['PrivateTest']['examples'])
             self.validation_labels   = self.flatten_labels(
-                self.array(self.data['PublicTest']['labels'])
+                self.array(self.datasets['PrivateTest']['labels'])
             )
 
-            self.test_examples = self.array(self.data['PrivateTest']['examples'])
+            self.test_examples = self.array(self.datasets['PublicTest']['examples'])
             self.test_labels   = self.flatten_labels(
-                self.array(self.data['PrivateTest']['labels'])
+                self.array(self.datasets['PublicTest']['labels'])
             )
 
             return self

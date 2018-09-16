@@ -1,13 +1,13 @@
 import unittest
 
-from lib.data.sources.fer_csv import FER_CSV
+from lib.data.data import Data
 
 num_pixels  = 48 * 48
 num_classes = 7
 
-class TestFER_CSV(unittest.TestCase):
+class TestData(unittest.TestCase):
     def setUp(self):
-        self.data = FER_CSV('./lib/data/sources/fer_subset.csv').load_data()
+        self.data = Data('./lib/data/sources/fer_subset.csv').load()
 
     def test_examples_shape(self):
         self.assertEqual(self.data.training_examples.shape[0],   num_pixels)
