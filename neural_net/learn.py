@@ -8,9 +8,9 @@ from lib.optimizers.adam import Adam
 from lib.utilities.timer import Timer
 from lib.utilities.graph import Graph
 
-pixels               = Data().load()
-data                 = Formatter(pixels).run()
-network_architecture = [data.num_features, 250, 150, data.num_classes]
+unformatted_data     = Data().load()
+data                 = Formatter(unformatted_data).run()
+network_architecture = [data.num_features, 28, 14, data.num_classes]
 weights, biases      = Initialize(network_architecture).weights_and_biases()
 timer                = Timer()
 optimizer            = Optimize(data.training_examples,
