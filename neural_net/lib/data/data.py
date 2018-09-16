@@ -26,19 +26,19 @@ class Data:
                 self.datasets[dataset]['examples'].append(pixels)
                 self.datasets[dataset]['labels'].append(label)
 
-            self.training_examples = self.array(self.datasets['Training']['examples'])
+            self.training_examples = self.to_numpy_array(self.datasets['Training']['examples'])
             self.training_labels   = self.flatten_labels(
-                self.array(self.datasets['Training']['labels'])
+                self.to_numpy_array(self.datasets['Training']['labels'])
             )
 
-            self.validation_examples = self.array(self.datasets['PrivateTest']['examples'])
+            self.validation_examples = self.to_numpy_array(self.datasets['PrivateTest']['examples'])
             self.validation_labels   = self.flatten_labels(
-                self.array(self.datasets['PrivateTest']['labels'])
+                self.to_numpy_array(self.datasets['PrivateTest']['labels'])
             )
 
-            self.test_examples = self.array(self.datasets['PublicTest']['examples'])
+            self.test_examples = self.to_numpy_array(self.datasets['PublicTest']['examples'])
             self.test_labels   = self.flatten_labels(
-                self.array(self.datasets['PublicTest']['labels'])
+                self.to_numpy_array(self.datasets['PublicTest']['labels'])
             )
 
             return self
@@ -57,7 +57,7 @@ class Data:
 
         return one_hot_vector
 
-    def array(self, list):
+    def to_numpy_array(self, list):
         return np.array(list, 'uint8').T
 
     def flatten_labels(self, labels):
