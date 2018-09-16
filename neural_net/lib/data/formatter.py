@@ -22,15 +22,18 @@ class Formatter:
         self.training_examples = training_examples
         self.training_labels   = training_labels
 
+        validation_examples, validation_labels = self.remove_zero_standard_deviation_data(self.validation_examples, self.validation_labels)
+        self.validation_examples = validation_examples
+        self.validation_labels   = validation_labels
+
         test_examples, test_labels = self.remove_zero_standard_deviation_data(self.test_examples, self.test_labels)
         self.test_examples = test_examples
         self.test_labels   = test_labels
 
     def augment(self):
-        additional_training_examples = Augmenter(self.training_examples).augment()
-
-        self.training_examples = np.column_stack((self.training_examples, additional_training_examples))
-        self.training_labels   = np.column_stack((self.training_labels, self.training_labels))
+        augmenter              = Augmenter(self.training_examples, self.training_labels).augment()
+        self.training_examples = augmenter.augmented_examples
+        self.training_labels   = augmenter.augmented_labels
 
     def normalize(self):
         self.training_set_means                         = np.array([np.mean(self.training_examples, 1)]).T
