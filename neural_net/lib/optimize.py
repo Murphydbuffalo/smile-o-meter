@@ -8,19 +8,20 @@ from lib.backward_prop   import BackwardProp
 from lib.optimizers.adam import Adam
 
 class Optimize:
-    def __init__(self, examples, labels, optimizer, regularization_strength, batch_size = 128, logging_enabled = True):
+    def __init__(self, examples, labels, optimizer, regularization_strength, num_epochs = 1000, batch_size = 128, logging_enabled = True):
         self.examples                = examples
         self.labels                  = labels
         self.optimizer               = optimizer
         self.weights                 = optimizer.weights
         self.biases                  = optimizer.biases
         self.regularization_strength = regularization_strength
+        self.num_epochs              = num_epochs
         self.batch_size              = batch_size
         self.costs                   = []
         self.logging_enabled         = logging_enabled
 
     def run(self):
-        for epoch in range(1000):
+        for epoch in range(self.num_epochs):
             self.log_epoch(epoch)
 
             for batch_number in range(self.num_batches()):
