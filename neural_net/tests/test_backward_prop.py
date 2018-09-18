@@ -6,6 +6,7 @@ from lib.cost                        import Cost
 from lib.backward_prop               import BackwardProp
 from lib.optimizers.gradient_descent import GradientDescent
 
+learning_rate          = 0.01
 num_input_features     = 10
 num_hidden_layer_nodes = 5
 num_classes            = 3
@@ -66,7 +67,7 @@ class TestBackwardProp(unittest.TestCase):
                 )
             )
 
-            optimizer = GradientDescent(weights, biases)
+            optimizer = GradientDescent(learning_rate, weights, biases)
             optimizer.update_parameters(weight_gradients, bias_gradients)
             weights = optimizer.weights
             biases  = optimizer.biases
