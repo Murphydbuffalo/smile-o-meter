@@ -1,3 +1,5 @@
+import numpy as np
+
 from sys import argv
 
 from lib.forward_prop    import ForwardProp
@@ -6,71 +8,97 @@ from lib.backward_prop   import BackwardProp
 from lib.optimizers.adam import Adam
 
 class Optimize:
-    regularization_strength = 0.001
-
-    def __init__(self, examples, labels, optimizer, cost_threshold = 0.25, logging_enabled = True):
-        self.examples        = examples
-        self.labels          = labels
-        self.optimizer       = optimizer
-        self.cost_threshold  = cost_threshold
-        self.logging_enabled = logging_enabled
-
-        self.weights      = optimizer.weights
-        self.biases       = optimizer.biases
-        self.current_cost = 9999
-        self.costs        = []
-        self.logger       = OptimizationLogger(self)
+    def __init__(self, examples, labels, optimizer, regularization_strength, batch_size = 128, logging_enabled = True):
+        self.examples                = examples
+        self.labels                  = labels
+        self.optimizer               = optimizer
+        self.weights                 = optimizer.weights
+        self.biases                  = optimizer.biases
+        self.regularization_strength = regularization_strength
+        self.batch_size              = batch_size
+        self.costs                   = []
+        self.logging_enabled         = logging_enabled
 
     def run(self):
-        while self.current_cost > self.cost_threshold:
-            forward_prop = ForwardProp(self.weights, self.biases, self.examples)
-            linear_activation, nonlinear_activation = forward_prop.run()
+        for epoch in range(1000):
+            self.log_epoch(epoch)
 
-            self.linear_activation    = linear_activation
-            self.nonlinear_activation = nonlinear_activation
+            for batch_number in range(self.num_batches()):
+                examples_batch = self.batch(batch_number, self.examples)
+                labels_batch   = self.batch(batch_number, self.labels)
 
-            self.current_cost = self.calculate_cost(forward_prop.network_output)
-            self.costs.append(self.current_cost)
+                forward_prop = ForwardProp(self.weights, self.biases, examples_batch)
+                self.linear_activation, self.nonlinear_activation = forward_prop.run()
 
-            weight_gradients, bias_gradients = self.backward_prop()
+                self.current_cost = self.calculate_cost(forward_prop.network_output, labels_batch)
+                self.costs.append(self.current_cost)
 
-            self.optimizer.update_parameters(weight_gradients, bias_gradients)
-            self.weights = self.optimizer.weights
-            self.biases  = self.optimizer.biases
+                weight_gradients, bias_gradients = self.backward_prop(labels_batch)
 
-            if self.logging_enabled:
-                self.logger.log(weight_gradients)
+                self.optimizer.update_parameters(weight_gradients, bias_gradients)
+                self.weights = self.optimizer.weights
+                self.biases  = self.optimizer.biases
 
+                self.log_batch(batch_number)
+
+                if self.training_complete(): return self.learned_parameters()
+
+        return self.learned_parameters()
+
+    def learned_parameters(self):
         return {
             'costs':   self.costs,
             'weights': self.weights,
             'biases':  self.biases
         }
 
+    def num_batches(self):
+        return int(self.examples.shape[1] / self.batch_size)
+
+    def batch(self, batch_number, array):
+        start_index = batch_number * self.batch_size
+        end_index   = start_index  + self.batch_size
+        return array[:, start_index:end_index]
+
+    def training_complete(self):
+        return self.cost_converged() or self.cost_below_threshold()
+
+    def cost_converged(self):
+        recent_costs     = self.costs[-5:]
+        acceptable_delta = 0.001
+
+        if len(recent_costs) < 5: return False
+
+        for i in range(len(recent_costs) - 1):
+            delta = abs(recent_costs[i] - recent_costs[i + 1])
+            if delta > acceptable_delta: return False
+
+        print(f"Cost has converged. Recent costs => {recent_costs}")
+        return True
+
+    def cost_below_threshold(self):
+        return self.current_cost <= 0.05
+
     def current_cost(self):
         return self.costs[-1]
 
-    def backward_prop(self):
+    def backward_prop(self, labels_batch):
         return BackwardProp(self.weights,
                             self.linear_activation,
                             self.nonlinear_activation,
-                            self.labels,
+                            labels_batch,
                             self.regularization_strength).run()
 
-    def calculate_cost(self, network_output):
+    def calculate_cost(self, network_output, labels_batch):
         return Cost(network_output,
-                    self.labels,
+                    labels_batch,
                     self.weights,
                     self.regularization_strength).cross_entropy_loss()
 
-class OptimizationLogger:
-    def __init__(self, optimizer):
-        self.optimizer = optimizer
-        self.iteration = 0
+    def log_epoch(self, epoch):
+        if self.logging_enabled:
+            print(f"\n***Epoch {epoch + 1}***")
 
-    def log(self, weight_gradients):
-        if (self.iteration % 10) == 0:
-            print("Iteration #", self.iteration)
-            print("Cost is", self.optimizer.current_cost)
-
-        self.iteration += 1
+    def log_batch(self, batch_number):
+        if self.logging_enabled and (batch_number % 500) == 0:
+            print(f"Batch {batch_number + 1}, Cost {self.current_cost}")
