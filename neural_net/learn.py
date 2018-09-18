@@ -1,34 +1,38 @@
 import numpy as np
 
-from lib.data.data       import Data
-from lib.data.formatter  import Formatter
-from lib.initialize      import Initialize
-from lib.optimize        import Optimize
-from lib.optimizers.adam import Adam
-from lib.utilities.timer import Timer
-from lib.utilities.graph import Graph
+from lib.data.data import Data
+from lib.model     import Model
 
-unformatted_data     = Data().load()
-data                 = Formatter(unformatted_data).run()
-network_architecture = [data.num_features, 28, 14, data.num_classes]
-weights, biases      = Initialize(network_architecture).weights_and_biases()
-timer                = Timer()
-optimizer            = Optimize(data.training_examples,
-                                data.training_labels,
-                                Adam(weights, biases))
+data = Data().load()
 
-timer.time(optimizer.run)
-results      = timer.result
-time_elapsed = timer.time_elapsed
+learning_rates              = [0.05, 0.025, 0.01, 0.005, 0.0025, 0.001, 0.0005, 0.00025 0.0001],
+regularization_strengths    = [0.01, 0.005, 0.0025, 0.001, 0.0005, 0.00025 0.0001],
+number_hidden_layers        = [4, 3, 2, 1],
+min_number_hidden_nodes     = [7, 14, 21, 28, 35, 42, 49]
+hyperparameter_combinations = []
 
-print(f"Total training was {timer.string()}")
+for learning_rate in learning_rates:
+    for regularization_strength in regularization_strengths:
+        for num_layers in number_hidden_layers:
+            for num_nodes in min_number_hidden_nodes:
+                hyperparameter_combinations.append({
+                    'learning_rate':           learning_rate,
+                    'regularization_strength': regularization_strength
+                    'number_hidden_layers':    num_layers,
+                    'min_number_hidden_nodes': num_nodes
+                })
 
-print("Saving learned parameters...")
-np.save('./output/learned_weights', results['weights'])
-np.save('./output/learned_biases', results['biases'])
+np.random.shuffle(hyperparameter_combinations)
 
-print("Saving statistics for normalization of test data...")
-np.save('./output/training_set_means', data.training_set_means)
-np.save('./output/zero_mean_training_set_standard_deviations', data.zero_mean_training_set_standard_deviations)
+for hyperparameters in hyperparameter_combinations[0:25]:
+    model = Model(data,
+                  hyperparameters['learning_rate'],
+                  hyperparameters['regularization_strength'],
+                  hyperparameters['number_hidden_layers'],
+                  hyperparameters['min_number_hidden_nodes'])
 
-Graph(ylabel = "Cost", xlabel = "Iteration", data = results['costs']).render()
+    model.train()
+    model.validate()
+    model.log_results()
+    model.save_parameters()
+    model.graph_training_costs()
