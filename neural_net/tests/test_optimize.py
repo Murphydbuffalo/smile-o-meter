@@ -5,10 +5,12 @@ from lib.optimize                    import Optimize
 from lib.optimizers.gradient_descent import GradientDescent
 from lib.optimizers.adam             import Adam
 
-num_input_features     = 10
-num_hidden_layer_nodes = 5
-num_classes            = 3
-num_examples           = 10
+learning_rate           = 0.01
+regularization_strength = 0.0001
+num_input_features      = 10
+num_hidden_layer_nodes  = 5
+num_classes             = 3
+num_examples            = 100
 
 class TestOptimize(unittest.TestCase):
     def setUp(self):
@@ -22,26 +24,29 @@ class TestOptimize(unittest.TestCase):
             np.zeros((num_classes, 1)),
         ])
         examples = np.random.randn(num_input_features, num_examples)
-        labels = np.array([
+        labels   = np.tile(np.array([
             [1, 0, 0, 1, 0, 0, 0, 1, 1, 0],
             [0, 0, 0, 0, 1, 0, 1, 0, 0, 1],
             [0, 1, 1, 0, 0, 1, 0, 0, 0, 0],
-        ])
+        ]), 10)
 
-        gradient_descent = GradientDescent(self.weights, self.biases)
-        adam             = Adam(self.weights, self.biases)
+        gradient_descent = GradientDescent(learning_rate, self.weights, self.biases)
+        adam             = Adam(learning_rate, self.weights, self.biases)
 
-        self.cost_threshold = 1.0
         self.gradient_descent_optimizer = Optimize(examples,
                                                    labels,
                                                    gradient_descent,
-                                                   self.cost_threshold,
+                                                   regularization_strength,
+                                                   num_epochs      = 10,
+                                                   batch_size      = 10,
                                                    logging_enabled = False)
 
         self.adam_optimizer = Optimize(examples,
                                        labels,
                                        adam,
-                                       self.cost_threshold,
+                                       regularization_strength,
+                                       num_epochs      = 10,
+                                       batch_size      = 10,
                                        logging_enabled = False)
 
     def test_returns_learned_parameters_with_gradient_descent(self):
@@ -57,16 +62,11 @@ class TestOptimize(unittest.TestCase):
         self.assertTrue(result['biases'][1].shape == self.biases[1].shape)
         self.assertFalse((result['biases'][1] == self.biases[1]).all())
 
-    # Costs should decrease over every iteration ("monotonically decreasing")
-    #  when using the `GradientDescent` optimizer.
-    def test_monotonically_lowers_costs_with_gradient_descent(self):
+    def test_generally_lowers_costs_with_gradient_descent(self):
         result = self.gradient_descent_optimizer.run()
         costs  = result['costs']
 
-        for i in range(0, len(costs) - 1):
-            self.assertTrue(costs[i] > costs[i + 1])
-
-        self.assertTrue(costs[-1] < self.cost_threshold)
+        self.assertTrue(costs[0] > costs[-1])
 
     def test_returns_learned_parameters_and_cost_with_adam(self):
         result = self.adam_optimizer.run()
@@ -81,14 +81,11 @@ class TestOptimize(unittest.TestCase):
         self.assertTrue(result['biases'][1].shape == self.biases[1].shape)
         self.assertFalse((result['biases'][1] == self.biases[1]).all())
 
-    # Costs generally decrease over time when using the `Adam` optimizer
-    # but are not guaranteed to decrease on every iteration.
     def test_generally_lowers_costs_with_adam(self):
         result = self.adam_optimizer.run()
         costs  = result['costs']
 
         self.assertTrue(costs[0] > costs[-1])
-        self.assertTrue(costs[-1] < self.cost_threshold)
 
 if __name__ == '__main__':
     unittest.main()
