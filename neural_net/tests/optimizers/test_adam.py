@@ -19,6 +19,7 @@ from lib.optimizers.adam import Adam
 # based algorithms like GradientDescent.
 class TestAdam(unittest.TestCase):
     def setUp(self):
+        learning_rate          = 0.01
         num_input_features     = 10
         num_hidden_layer_nodes = 5
         num_classes            = 3
@@ -40,7 +41,7 @@ class TestAdam(unittest.TestCase):
             np.random.randn(num_classes, 1)
         ])
 
-        self.adam = Adam(weights, biases)
+        self.adam = Adam(learning_rate, weights, biases)
 
     def test_parameters_decrease_at_a_decreasing_rate(self):
         update_amounts = []

@@ -3,6 +3,7 @@ import numpy as np
 
 from lib.optimizers.gradient_descent import GradientDescent
 
+learning_rate          = 0.001
 num_input_features     = 10
 num_hidden_layer_nodes = 5
 num_classes            = 3
@@ -19,7 +20,7 @@ class TestGradientDescent(unittest.TestCase):
             np.zeros((num_classes, 1)),
         ])
 
-        self.gradient_descent = GradientDescent(self.weights, self.biases)
+        self.gradient_descent = GradientDescent(learning_rate, self.weights, self.biases)
 
     def test_update_parameters(self):
         weight_gradients = np.array([
@@ -34,7 +35,7 @@ class TestGradientDescent(unittest.TestCase):
 
         self.gradient_descent.update_parameters(weight_gradients, bias_gradients)
 
-        expected_updated_weights = self.weights - GradientDescent.learning_rate
+        expected_updated_weights = self.weights - learning_rate
 
         self.assertTrue(
             np.allclose(self.gradient_descent.weights[0], expected_updated_weights[0])

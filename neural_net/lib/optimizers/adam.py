@@ -1,12 +1,12 @@
 import numpy as np
 
 class Adam:
-    learning_rate = 0.0005
     momentum_rate = 0.9
     rms_prop_rate = 0.999
     epsilon       = 0.00000001
 
-    def __init__(self, weights, biases):
+    def __init__(self, learning_rate, weights, biases):
+        self.learning_rate           = learning_rate
         self.weights                 = weights
         self.biases                  = biases
         self.momentum_weight_average = np.zeros(weights.shape)
