@@ -1,6 +1,7 @@
 /build
 **/__pycache__
 **/*.pyc
+**/*.npy
 **/*.csv
 node_modules
 lambda/node_modules

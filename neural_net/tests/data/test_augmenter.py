@@ -3,17 +3,15 @@ import numpy as np
 
 from imgaug import augmenters
 
-from lib.data.data      import Data
+from lib.data.raw       import Raw
 from lib.data.augmenter import Augmenter
 
 class TestAugmenter(unittest.TestCase):
     def setUp(self):
-        data                   = Data('./lib/data/sources/fer_subset.csv').load()
+        data                   = Raw('./lib/data/sources/fer_subset.csv').load()
         self.original_examples = data.training_examples
         self.original_labels   = data.training_labels
-        self.augmenter         = Augmenter(self.original_examples, self.original_labels)
-
-        self.augmenter.augment()
+        self.augmenter         = Augmenter(self.original_examples, self.original_labels).augment()
 
     def test_additional_examples_are_generated(self):
         num_augmented = self.augmenter.augmented_examples.shape[1]

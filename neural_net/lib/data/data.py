@@ -1,64 +1,56 @@
 import numpy as np
-import csv
-import os
 
-# We're using the Facial Expression Recognition ("FER") dataset from Kaggle:
-# https://www.kaggle.com/c/challenges-in-representation-learning-facial-expression-recognition-challenge/data
+from lib.data.raw        import Raw
+from lib.data.augmenter  import Augmenter
+from lib.data.normalizer import Normalizer
+
 class Data:
-    num_classes = 7
-
     def __init__(self, filename = './lib/data/sources/fer2013.csv'):
-        self.file     = open(filename)
-        self.csv      = csv.DictReader(self.file)
-        self.datasets = {
-            'Training':    { 'examples': [], 'labels': [] },
-            'PrivateTest': { 'examples': [], 'labels': [] },
-            'PublicTest':  { 'examples': [], 'labels': [] }
-        }
+        self.filename = filename
 
-    def load(self):
-        try:
-            for row in self.csv:
-                dataset = row['Usage']
-                pixels  = row['pixels'].split()
-                label   = self.label(row)
+    def build(self):
+        raw_data   = Raw(self.filename).load()
+        augmenter  = Augmenter(raw_data.training_examples,
+                               raw_data.training_labels).augment()
 
-                self.datasets[dataset]['examples'].append(pixels)
-                self.datasets[dataset]['labels'].append(label)
+        normalizer = Normalizer(augmenter.augmented_examples,
+                                raw_data.validation_examples,
+                                raw_data.test_examples).normalize()
 
-            self.training_examples = self.to_numpy_array(self.datasets['Training']['examples'])
-            self.training_labels   = self.flatten_labels(
-                self.to_numpy_array(self.datasets['Training']['labels'])
-            )
+        self.training_examples = normalizer.normalized_training_examples
+        self.training_labels   = augmenter.augmented_labels
 
-            self.validation_examples = self.to_numpy_array(self.datasets['PrivateTest']['examples'])
-            self.validation_labels   = self.flatten_labels(
-                self.to_numpy_array(self.datasets['PrivateTest']['labels'])
-            )
+        self.validation_examples = normalizer.normalized_validation_examples
+        self.validation_labels   = raw_data.validation_labels
 
-            self.test_examples = self.to_numpy_array(self.datasets['PublicTest']['examples'])
-            self.test_labels   = self.flatten_labels(
-                self.to_numpy_array(self.datasets['PublicTest']['labels'])
-            )
+        self.test_examples = normalizer.normalized_test_examples
+        self.test_labels   = raw_data.test_labels
 
-            return self
-        finally:
-            self.file.close()
+        self.shuffle_training_data()
 
-    # Convert an integer into a "one-hot" vector of 0s and 1s, with the sole 1
-    # at the index corresponding to the integer. Eg, with 7 possible classes the
-    # zero-indexed label `3` becomes `[0, 0, 0, 1, 0, 0, 0]`. The neural network
-    # outputs its predictions as vectors of this form, so it's easiest to convert
-    # the labels to the same form for comparison.
-    def label(self, row):
-        one_hot_vector            = [[0]] * self.num_classes
-        fer_label                 = int(row['emotion'])
-        one_hot_vector[fer_label] = [1]
+        return self
 
-        return one_hot_vector
+    # compare file size of augmented training data to raw csv
+    def save_to_file(self):
+        np.save('./lib/data/sources/training_examples',   self.training_examples)
+        np.save('./lib/data/sources/training_labels',     self.training_labels)
+        np.save('./lib/data/sources/validation_examples', self.validation_examples)
+        np.save('./lib/data/sources/validation_labels',   self.validation_labels)
+        np.save('./lib/data/sources/test_examples',       self.test_examples)
+        np.save('./lib/data/sources/test_labels',         self.test_labels)
 
-    def to_numpy_array(self, list):
-        return np.array(list, 'uint8').T
+    def load_from_file(self):
+        self.training_examples   = np.load('./lib/data/sources/training_examples.npy')
+        self.training_labels     = np.load('./lib/data/sources/training_labels.npy')
+        self.validation_examples = np.load('./lib/data/sources/validation_examples.npy')
+        self.validation_labels   = np.load('./lib/data/sources/validation_labels.npy')
+        self.test_examples       = np.load('./lib/data/sources/test_examples.npy')
+        self.test_labels         = np.load('./lib/data/sources/test_labels.npy')
 
-    def flatten_labels(self, labels):
-        return labels.reshape((self.num_classes, -1))
+    # Perform identical in-place shuffles on the training examples and labels
+    def shuffle_training_data(self):
+        random_state = np.random.get_state()
+        np.random.shuffle(self.training_examples)
+
+        np.random.set_state(random_state)
+        np.random.shuffle(self.training_labels)
