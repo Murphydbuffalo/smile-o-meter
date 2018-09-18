@@ -31,7 +31,7 @@ class Data:
         return self
 
     # compare file size of augmented training data to raw csv
-    def save_to_file(self):
+    def save(self):
         np.save('./lib/data/sources/training_examples',   self.training_examples)
         np.save('./lib/data/sources/training_labels',     self.training_labels)
         np.save('./lib/data/sources/validation_examples', self.validation_examples)
@@ -39,13 +39,17 @@ class Data:
         np.save('./lib/data/sources/test_examples',       self.test_examples)
         np.save('./lib/data/sources/test_labels',         self.test_labels)
 
-    def load_from_file(self):
+        return self
+
+    def load(self):
         self.training_examples   = np.load('./lib/data/sources/training_examples.npy')
         self.training_labels     = np.load('./lib/data/sources/training_labels.npy')
         self.validation_examples = np.load('./lib/data/sources/validation_examples.npy')
         self.validation_labels   = np.load('./lib/data/sources/validation_labels.npy')
         self.test_examples       = np.load('./lib/data/sources/test_examples.npy')
         self.test_labels         = np.load('./lib/data/sources/test_labels.npy')
+
+        return self
 
     # Perform identical in-place shuffles on the training examples and labels
     def shuffle_training_data(self):
