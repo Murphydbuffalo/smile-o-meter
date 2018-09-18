@@ -1,11 +1,12 @@
 /build
 **/__pycache__
 **/*.pyc
-**/*.npy
-**/*.csv
 node_modules
 lambda/node_modules
 lambda/env
 lambda/.serverless
 neural_net/env
 neural_net/.Python
+neural_net/output
+neural_net/lib/data/sources/*.npy
+neural_net/lib/data/sources/*.csv
