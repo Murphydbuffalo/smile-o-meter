@@ -4,10 +4,12 @@ from datetime import datetime, timedelta
 class Timer:
     def time(self, fn):
         start_time        = time()
-        self.result       = fn()
+        result            = fn()
         end_time          = time()
         seconds           = timedelta(seconds=int(end_time - start_time))
         self.time_elapsed = datetime(1,1,1) + seconds
+
+        return result
 
     def string(self):
         time_components = [self.day(), self.hour(), self.minute(), self.second()]
