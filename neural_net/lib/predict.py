@@ -19,6 +19,8 @@ class Predict:
         forward_prop.run()
         self.network_output = forward_prop.network_output
 
+        return { 'accuracy': self.percent_correct(), 'cost': self.cost() }
+
     def cost(self):
         return Cost(self.network_output,
                     self.labels,
