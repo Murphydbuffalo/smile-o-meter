@@ -11,6 +11,9 @@ num_input_features      = 10
 num_hidden_layer_nodes  = 5
 num_classes             = 3
 num_examples            = 100
+small_num_epochs        = 10
+big_num_epochs          = 100
+batch_size              = 10
 
 class TestOptimize(unittest.TestCase):
     def setUp(self):
@@ -37,16 +40,16 @@ class TestOptimize(unittest.TestCase):
                                                    labels,
                                                    gradient_descent,
                                                    regularization_strength,
-                                                   num_epochs      = 10,
-                                                   batch_size      = 10,
+                                                   num_epochs      = small_num_epochs,
+                                                   batch_size      = batch_size,
                                                    logging_enabled = False)
 
         self.adam_optimizer = Optimize(examples,
                                        labels,
                                        adam,
                                        regularization_strength,
-                                       num_epochs      = 10,
-                                       batch_size      = 10,
+                                       num_epochs      = big_num_epochs,
+                                       batch_size      = batch_size,
                                        logging_enabled = False)
 
     def test_returns_learned_parameters_with_gradient_descent(self):
@@ -66,7 +69,11 @@ class TestOptimize(unittest.TestCase):
         result = self.gradient_descent_optimizer.run()
         costs  = result['costs']
 
-        self.assertTrue(costs[0] > costs[-1])
+        # Assert that cost decreases every epoch
+        for epoch in range(1, small_num_epochs):
+            previous_epoch_start = (epoch - 1) * batch_size
+            current_epoch_start  = epoch * batch_size
+            self.assertTrue(costs[previous_epoch_start] > costs[current_epoch_start])
 
     def test_returns_learned_parameters_and_cost_with_adam(self):
         result = self.adam_optimizer.run()
@@ -85,7 +92,13 @@ class TestOptimize(unittest.TestCase):
         result = self.adam_optimizer.run()
         costs  = result['costs']
 
-        self.assertTrue(costs[0] > costs[-1])
+        # Assert that cost decreases every 20th epoch rather than every single
+        # epoch, because Adam is a little less consistent in decreasing cost
+        # than GradientDescent
+        for epoch in range(1, int(big_num_epochs / 20)):
+            previous_epoch_start = (epoch - 1) * 20 * batch_size
+            current_epoch_start  = epoch * 20 * batch_size
+            self.assertTrue(costs[previous_epoch_start] > costs[current_epoch_start])
 
 if __name__ == '__main__':
     unittest.main()
