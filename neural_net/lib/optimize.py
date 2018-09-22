@@ -1,11 +1,8 @@
 import numpy as np
 
-from sys import argv
-
 from lib.forward_prop    import ForwardProp
 from lib.cost            import Cost
 from lib.backward_prop   import BackwardProp
-from lib.optimizers.adam import Adam
 
 class Optimize:
     def __init__(self, examples, labels, optimizer, regularization_strength, num_epochs = 1000, batch_size = 128, logging_enabled = True):
