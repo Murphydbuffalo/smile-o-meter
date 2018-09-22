@@ -4,7 +4,7 @@ class BackwardProp:
     def __init__(self, weights, Z, A, labels, regularization_strength):
         self.weights                 = weights
         self.labels                  = labels
-        self.num_examles             = labels.shape[1]
+        self.num_examples            = labels.shape[1]
         self.regularization_strength = regularization_strength
         self.Z                       = Z # Z = W_current_layer * A_previous_layer + B_current_layer
         self.A                       = A # A = activation(Z) where activation is ReLU for hidden layers and Softmax for the output layer
