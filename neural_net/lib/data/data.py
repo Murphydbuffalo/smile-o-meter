@@ -26,7 +26,7 @@ class Data:
         self.test_examples = normalizer.normalized_test_examples
         self.test_labels   = raw_data.test_labels
 
-        self.shuffle_training_data()
+        self.shuffle_in_unison(self.training_labels, self.training_examples)
 
         return self
 
@@ -51,10 +51,10 @@ class Data:
 
         return self
 
-    # Perform identical in-place shuffles on the training examples and labels
-    def shuffle_training_data(self):
+    # Perform identical in-place shuffles on the *columns* of two arrays
+    def shuffle_in_unison(self, array1, array2):
         random_state = np.random.get_state()
-        np.random.shuffle(self.training_examples)
+        np.random.shuffle(array1.T)
 
         np.random.set_state(random_state)
-        np.random.shuffle(self.training_labels)
+        np.random.shuffle(array2.T)
