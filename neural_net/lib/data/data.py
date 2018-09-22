@@ -30,7 +30,6 @@ class Data:
 
         return self
 
-    # compare file size of augmented training data to raw csv
     def save(self):
         np.save('./lib/data/sources/training_examples',   self.training_examples)
         np.save('./lib/data/sources/training_labels',     self.training_labels)
