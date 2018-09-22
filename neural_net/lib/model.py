@@ -1,4 +1,3 @@
-from lib.optimizers.adam import Adam
 from lib.utilities.graph import Graph
 from lib.initialize      import Initialize
 from lib.optimize        import Optimize
@@ -6,8 +5,9 @@ from lib.predict         import Predict
 from lib.utilities.timer import Timer
 
 class Model:
-    def __init__(self, data, learning_rate, regularization_strength, num_layers, min_number_hidden_nodes):
+    def __init__(self, data, optimization_algorithm, learning_rate, regularization_strength, num_layers, min_number_hidden_nodes):
         self.data                    = data
+        self.optimization_algorithm  = optimization_algorithm
         self.learning_rate           = learning_rate
         self.regularization_strength = regularization_strength
         self.num_hidden_layers       = num_layers
@@ -23,16 +23,18 @@ class Model:
                             self.learned_biases)
 
         validation_results = predictor.run()
-        self.accuracy = validation_results['accuracy']
-        self.cost     = validation_results['cost']
+        self.accuracy      = validation_results['accuracy']
+        self.cost          = validation_results['cost']
 
         return validation_results
 
     def train(self):
-        optimizer = Optimize(self.data.training_examples,
-                             self.data.training_labels,
-                             self.optimization_algorithm(),
-                             self.regularization_strength)
+        weights, biases = self.initialize_parameters()
+        algorithm       = self.optimization_algorithm(self.learning_rate, weights, biases)
+        optimizer       = Optimize(self.data.training_examples,
+                                   self.data.training_labels,
+                                   algorithm,
+                                   self.regularization_strength)
 
         training_results = self.timer.time(optimizer.run)
 
@@ -41,10 +43,6 @@ class Model:
         self.learned_biases  = training_results['biases']
 
         return training_results
-
-    def optimization_algorithm(self):
-        weights, biases = self.initialize_parameters()
-        return Adam(self.learning_rate, weights, biases)
 
     def initialize_parameters(self):
         return Initialize(self.network_architecture()).weights_and_biases()
@@ -64,6 +62,7 @@ class Model:
     def log_results(self):
         print("\nTRAINING INFO")
         print(f"Total training time: {self.timer.string()}")
+        print(f"Algorithm: {self.optimization_algorithm.__name__}")
         print(f"Learning rate: {self.learning_rate}")
         print(f"Regularization strength: {self.regularization_strength}")
         print(f"Number of hidden layers: {self.num_hidden_layers}")
@@ -73,18 +72,36 @@ class Model:
         print("Accuracy:",     self.accuracy)
         print("Average cost:", self.cost)
 
-
     def save_parameters(self):
-        filename_prefix = (
-            "./output/accuracy-{0}-learning_rate_{1}_regularization_{2}_num_layers_{3}_num_nodes_{4}"
-        ).format(self.validation_results['accuracy'],
-                 self.learning_rate,
-                 self.regularization_strength,
-                 self.num_hidden_layers,
-                 self.min_number_hidden_nodes)
+        assert hasattr(self, 'accuracy'), 'You must validate the model before saving its learned parameters!'
+        np.save(self.weights_filename(), results['weights'])
+        np.save(self.biases_filename(),  results['biases'])
 
-        np.save(filename_prefix + '_weights', results['weights'])
-        np.save(filename_prefix + '_biases',  results['biases'])
+    def weights_filename(self):
+        return ("./output/accuracy-{0}-{1}-weights").format(self.accuracy, self.hash())
+
+    def biases_filename(self):
+        return ("./output/accuracy-{0}-{1}-biases").format(self.accuracy, self.hash())
+
+    def hash(self):
+        return str(hash(self.hyperparameter_string()))
+
+    def hyperparameter_string(self):
+        hyperparameters = ['algorithm',
+                           self.algorithm_name(),
+                           'learning-rate',
+                           self.learning_rate,
+                           'regularization-strength',
+                           self.regularization_strength,
+                           'num-hidden-layers',
+                           self.num_hidden_layers,
+                           'min-number-hidden-nodes',
+                           self.min_number_hidden_nodes]
+
+        return '-'.join([str(hp) for hp in hyperparameters])
+
+    def algorithm_name(self):
+        return self.optimization_algorithm.__name__
 
     def graph_training_costs(self):
         Graph(ylabel = "Cost", xlabel = "Iteration", data = self.training_costs).render()
