@@ -8,10 +8,10 @@ from lib.gradient_check              import GradientCheck
 from lib.optimizers.gradient_descent import GradientDescent
 
 learning_rate          = 0.01
-num_input_features     = 10
-num_hidden_layer_nodes = 5
-num_classes            = 3
-num_examples           = 1000
+num_input_features     = 28
+num_hidden_layer_nodes = 14
+num_classes            = 7
+num_examples           = 100
 
 class TestBackwardProp(unittest.TestCase):
     def setUp(self):
