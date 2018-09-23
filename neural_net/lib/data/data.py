@@ -26,8 +26,6 @@ class Data:
         self.test_examples = normalizer.normalized_test_examples
         self.test_labels   = raw_data.test_labels
 
-        self.shuffle_in_unison(self.training_labels, self.training_examples)
-
         return self
 
     def save(self):
@@ -49,11 +47,3 @@ class Data:
         self.test_labels         = np.load('./lib/data/sources/test_labels.npy')
 
         return self
-
-    # Perform identical in-place shuffles on the *columns* of two arrays
-    def shuffle_in_unison(self, array1, array2):
-        random_state = np.random.get_state()
-        np.random.shuffle(array1.T)
-
-        np.random.set_state(random_state)
-        np.random.shuffle(array2.T)

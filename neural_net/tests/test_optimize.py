@@ -1,9 +1,10 @@
 import unittest
 import numpy as np
 
-from lib.optimize                    import Optimize
-from lib.optimizers.gradient_descent import GradientDescent
 from lib.optimizers.adam             import Adam
+from lib.optimizers.gradient_descent import GradientDescent
+from lib.optimize                    import Optimize
+from lib.data.raw                    import Raw
 
 learning_rate           = 0.01
 regularization_strength = 0.0001
@@ -14,6 +15,10 @@ num_examples            = 100
 small_num_epochs        = 10
 big_num_epochs          = 100
 batch_size              = 10
+
+# Can't pass a Numpy array to `hash`, so we first convert it to a tuple
+def hash_array(array):
+     return hash(tuple(array))
 
 class TestOptimize(unittest.TestCase):
     def setUp(self):
@@ -99,6 +104,29 @@ class TestOptimize(unittest.TestCase):
             previous_epoch_start = (epoch - 1) * 20 * batch_size
             current_epoch_start  = epoch * 20 * batch_size
             self.assertTrue(costs[previous_epoch_start] > costs[current_epoch_start])
+
+    def test_shuffle_in_unison(self):
+        raw_data  = Raw('./lib/data/sources/fer_subset.csv').load()
+        labels    = raw_data.training_labels
+        examples  = raw_data.training_examples
+        max_index = labels.shape[1]
+
+        label_to_example_mappings = {}
+
+        for i in range(max_index):
+            label_hash   = hash_array(labels[:,i])
+            example_hash = hash_array(examples[:,i])
+
+            label_to_example_mappings.setdefault(label_hash, [])
+            label_to_example_mappings[label_hash].append(example_hash)
+
+        self.adam_optimizer.shuffle_in_unison(labels, examples)
+
+        for i in range(max_index):
+            label_hash   = hash_array(labels[:,i])
+            example_hash = hash_array(examples[:,i])
+
+            self.assertTrue(example_hash in label_to_example_mappings[label_hash])
 
 if __name__ == '__main__':
     unittest.main()

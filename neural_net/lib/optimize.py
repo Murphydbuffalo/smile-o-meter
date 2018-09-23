@@ -25,6 +25,8 @@ class Optimize:
                 examples_batch = self.batch(batch_number, self.examples)
                 labels_batch   = self.batch(batch_number, self.labels)
 
+                self.shuffle_in_unison(examples_batch, labels_batch)
+
                 forward_prop = ForwardProp(self.weights, self.biases, examples_batch)
                 self.linear_activation, self.nonlinear_activation = forward_prop.run()
 
@@ -100,3 +102,11 @@ class Optimize:
     def log_batch(self, batch_number):
         if self.logging_enabled and (batch_number % 500) == 0:
             print(f"Batch {batch_number + 1}, Cost {self.current_cost}")
+
+    # Perform identical in-place shuffles on the *columns* of two arrays
+    def shuffle_in_unison(self, array1, array2):
+        random_state = np.random.get_state()
+        np.random.shuffle(array1.T)
+
+        np.random.set_state(random_state)
+        np.random.shuffle(array2.T)

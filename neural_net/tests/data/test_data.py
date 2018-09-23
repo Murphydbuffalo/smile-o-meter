@@ -1,14 +1,9 @@
 import unittest
 
-from lib.data.raw  import Raw
 from lib.data.data import Data
 
 num_pixels  = 48 * 48
 num_classes = 7
-
-# Can't pass a Numpy array to `hash`, so we first convert it to a tuple
-def hash_array(array):
-     return hash(tuple(array))
 
 class TestFormatter(unittest.TestCase):
     def setUp(self):
@@ -55,30 +50,6 @@ class TestFormatter(unittest.TestCase):
             self.data.test_labels.shape[1],
             self.data.test_labels.sum()
         )
-
-    def test_shuffle_in_unison(self):
-        raw_data  = Raw('./lib/data/sources/fer_subset.csv').load()
-        labels    = raw_data.training_labels
-        examples  = raw_data.training_examples
-        max_index = labels.shape[1]
-
-        label_to_example_mappings = {}
-
-        for i in range(max_index):
-            label_hash   = hash_array(labels[:,i])
-            example_hash = hash_array(examples[:,i])
-
-            label_to_example_mappings.setdefault(label_hash, [])
-            label_to_example_mappings[label_hash].append(example_hash)
-
-        self.data.shuffle_in_unison(labels, examples)
-
-        for i in range(max_index):
-            label_hash   = hash_array(labels[:,i])
-            example_hash = hash_array(examples[:,i])
-
-            self.assertTrue(example_hash in label_to_example_mappings[label_hash])
-
 
 if __name__ == '__main__':
     unittest.main()
