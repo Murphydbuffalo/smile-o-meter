@@ -9,10 +9,10 @@ biases_file  = s3.download_file('smile-o-meter.rocks', 'learned_biases.npy',  '/
 weights      = np.load('/tmp/learned_weights.npy')
 biases       = np.load('/tmp/learned_biases.npy')
 
-training_set_means_file                    = s3.download_file('smile-o-meter.rocks', 'training_set_means.npy', '/tmp/training_set_means.npy')
-standard_deviations_file                   = s3.download_file('smile-o-meter.rocks', 'zero_mean_training_set_standard_deviations.npy',  '/tmp/zero_mean_training_set_standard_deviations.npy')
-training_set_means                         = np.load('/tmp/training_set_means.npy')
-zero_mean_training_set_standard_deviations = np.load('/tmp/zero_mean_training_set_standard_deviations.npy')
+training_set_means_file                    = s3.download_file('smile-o-meter.rocks', 'training_set_feature_means.npy', '/tmp/training_set_feature_means.npy')
+standard_deviations_file                   = s3.download_file('smile-o-meter.rocks', 'training_set_zero_mean_feature_standard_deviations.npy',  '/tmp/training_set_zero_mean_feature_standard_deviations.npy')
+training_set_means                         = np.load('/tmp/training_set_feature_means.npy')
+zero_mean_training_set_standard_deviations = np.load('/tmp/training_set_zero_mean_feature_standard_deviations.npy')
 
 def relu(Z):
     return np.maximum(Z, 0)
