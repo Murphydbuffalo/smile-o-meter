@@ -7,25 +7,23 @@ from lib.data.data                   import Data
 from lib.model                       import Model
 
 data                        = Data().load()
-algorithms                  = [Adam, GradientDescent]
 learning_rates              = [0.05, 0.025, 0.01, 0.005, 0.0025, 0.001, 0.0005, 0.00025, 0.0001]
 regularization_strengths    = [0.01, 0.005, 0.0025, 0.001, 0.0005, 0.00025, 0.0001]
 number_hidden_layers        = [4, 3, 2, 1]
 min_number_hidden_nodes     = [7, 14, 21, 28, 35, 42, 49]
 hyperparameter_combinations = []
 
-for algorithm in algorithms:
-    for learning_rate in learning_rates:
-        for regularization_strength in regularization_strengths:
-            for num_layers in number_hidden_layers:
-                for num_nodes in min_number_hidden_nodes:
-                    hyperparameter_combinations.append({
-                        'algorithm':               algorithm,
-                        'learning_rate':           learning_rate,
-                        'regularization_strength': regularization_strength,
-                        'number_hidden_layers':    num_layers,
-                        'min_number_hidden_nodes': num_nodes
-                    })
+for learning_rate in learning_rates:
+    for regularization_strength in regularization_strengths:
+        for num_layers in number_hidden_layers:
+            for num_nodes in min_number_hidden_nodes:
+                hyperparameter_combinations.append({
+                    'algorithm':               Adam,
+                    'learning_rate':           learning_rate,
+                    'regularization_strength': regularization_strength,
+                    'number_hidden_layers':    num_layers,
+                    'min_number_hidden_nodes': num_nodes
+                })
 
 np.random.shuffle(hyperparameter_combinations)
 
