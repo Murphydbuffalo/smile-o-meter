@@ -56,12 +56,11 @@ class GradientCheck:
     def numeric_gradient(self, weight, layer, row, column):
         self.weights[layer][row][column]       = weight + self.epsilon
         network_output_with_weight_adjusted_up = self.network_output()
+        cost_with_weight_adjusted_up           = self.cost(network_output_with_weight_adjusted_up)
 
         self.weights[layer][row][column]         = weight - self.epsilon
         network_output_with_weight_adjusted_down = self.network_output()
-
-        cost_with_weight_adjusted_up   = self.cost(network_output_with_weight_adjusted_up)
-        cost_with_weight_adjusted_down = self.cost(network_output_with_weight_adjusted_down)
+        cost_with_weight_adjusted_down           = self.cost(network_output_with_weight_adjusted_down)
 
         cost_difference = (cost_with_weight_adjusted_up - cost_with_weight_adjusted_down)
 
