@@ -8,14 +8,14 @@ class Data:
     def __init__(self, filename = './lib/data/sources/fer2013.csv'):
         self.filename = filename
 
-    def build(self):
+    def build(self, save_statistics = True):
         raw_data   = Raw(self.filename).load()
         augmenter  = Augmenter(raw_data.training_examples,
                                raw_data.training_labels).augment()
 
         normalizer = Normalizer(augmenter.augmented_examples,
                                 raw_data.validation_examples,
-                                raw_data.test_examples).normalize()
+                                raw_data.test_examples).normalize(save_statistics)
 
         self.training_examples = normalizer.normalized_training_examples
         self.training_labels   = augmenter.augmented_labels

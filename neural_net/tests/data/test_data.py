@@ -7,7 +7,7 @@ num_classes = 7
 
 class TestFormatter(unittest.TestCase):
     def setUp(self):
-        self.data = Data('./lib/data/sources/fer_subset.csv').build()
+        self.data = Data('./lib/data/sources/fer_subset.csv').build(save_statistics = False)
 
     def test_examples_shape(self):
         self.assertEqual(self.data.training_examples.shape[0],   num_pixels)

@@ -8,7 +8,7 @@ class TestFormatter(unittest.TestCase):
         self.original_data = np.random.randn(10, 10) * 100
         self.normalizer    = Normalizer(self.original_data,
                                         self.original_data,
-                                        self.original_data).normalize()
+                                        self.original_data).normalize(save_statistics = False)
 
     def test_data_is_normalized_to_have_zero_mean_and_one_standard_deviation(self):
         self.assertFalse(np.isclose(self.original_data.mean(), 0, atol = 0.01))
