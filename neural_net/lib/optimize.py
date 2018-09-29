@@ -5,7 +5,7 @@ from lib.cost            import Cost
 from lib.backward_prop   import BackwardProp
 
 class Optimize:
-    def __init__(self, examples, labels, optimizer, regularization_strength, num_epochs = 1000, batch_size = 128, logging_enabled = True):
+    def __init__(self, examples, labels, optimizer, regularization_strength, num_epochs = 1000, batch_size = 512, logging_enabled = True):
         self.examples                = examples
         self.labels                  = labels
         self.optimizer               = optimizer
@@ -100,7 +100,7 @@ class Optimize:
             print(f"\n***Epoch {epoch + 1}***")
 
     def log_batch(self, batch_number):
-        if self.logging_enabled and (batch_number % 500) == 0:
+        if self.logging_enabled and (batch_number % 100) == 0:
             print(f"Batch {batch_number + 1}, Cost {self.current_cost}")
 
     # Perform identical in-place shuffles on the *columns* of two arrays
