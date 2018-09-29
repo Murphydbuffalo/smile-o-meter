@@ -35,7 +35,7 @@ class GradientCheck:
         # magnitudes of the values being compared. Instead we are concerned with
         # only the absolute difference between values, as set by `atol`. TLDR
         # this check says "are all the derivatives" within `atol` of each other?
-        return np.allclose(self.weight_gradients[layer], gradients, atol = 0.001, rtol = 0)
+        return np.allclose(self.weight_gradients[layer], gradients, atol = 0.0000001, rtol = 0)
 
     def numeric_gradients(self, layer):
         gradients = np.zeros(self.weights[layer].shape)
