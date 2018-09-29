@@ -1,3 +1,5 @@
+import numpy as np
+
 from lib.utilities.graph import Graph
 from lib.initialize      import Initialize
 from lib.optimize        import Optimize
