@@ -76,8 +76,8 @@ class Model:
 
     def save_parameters(self):
         assert hasattr(self, 'accuracy'), 'You must validate the model before saving its learned parameters!'
-        np.save(self.weights_filename(), results['weights'])
-        np.save(self.biases_filename(),  results['biases'])
+        np.save(self.weights_filename(), self.learned_weights)
+        np.save(self.biases_filename(),  self.learned_biases)
 
     def weights_filename(self):
         return ("./output/accuracy-{0}-{1}-weights").format(self.accuracy, self.hash())
