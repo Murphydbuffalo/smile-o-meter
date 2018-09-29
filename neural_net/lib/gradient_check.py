@@ -26,7 +26,7 @@ class GradientCheck:
         self.examples                = examples
         self.labels                  = labels
         self.regularization_strength = regularization_strength
-        self.epsilon                 = 0.00001
+        self.epsilon                 = 0.0000001
 
     def run(self, layer):
         gradients = self.numeric_gradients(layer)
