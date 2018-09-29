@@ -1,62 +1,85 @@
 import numpy as np
-from lib.forward_prop  import ForwardProp
-from lib.cost          import Cost
 
+from lib.cost         import Cost
+from lib.forward_prop import ForwardProp
+
+# The job of `BackwardProp` is to *efficiently* calculate gradients
+# (derivatives for a vector/array). A neural network can easily have many
+# thousands of weights, and needs to calculate the derivative for all of
+# in order to "learn" (update the weights in such a way that the network
+# gets better at its assigned task). These weight updates will likely need
+# to happen thousands of times before the network becomes suitably effective.
+#
+# Therefore it becomes prohibitively expensive to calculate the *numeric*
+# gradients for each individual weight on every iteration. "Numeric" meaning
+# calcuating the approximate derivative based on the two-sided limit formula
+# `(f(x + e) - f(x - e)) / 2e`.
+#
+# Instead, we can calculate the "analytic" derivatives, which means
+# algebraically calculating the derivatives for all weights in a layer at
+# once, via the chain rule.
 class GradientCheck:
-    def __init__(self, weights, biases, weight_gradients, X, Y):
-        self.weights          = weights
-        self.biases           = biases
-        self.weight_gradients = weight_gradients
-        self.X                = X
-        self.Y                = Y
-        self.epsilon          = 0.00001
+    def __init__(self, weight_gradients, weights, biases, examples, labels, regularization_strength):
+        self.weight_gradients        = weight_gradients
+        self.weights                 = weights
+        self.biases                  = biases
+        self.examples                = examples
+        self.labels                  = labels
+        self.regularization_strength = regularization_strength
+        self.epsilon                 = 0.0000001
 
-    def run(self):
-        acceptable_delta   = self.epsilon
-        numeric_gradients  = self.__numeric_gradients()
-        analytic_gradients = self.weight_gradients
-        delta1             = np.abs(numeric_gradients[-2] - analytic_gradients[-2])
-        delta2             = np.abs(numeric_gradients[-1] - analytic_gradients[-1])
+    def run(self, layer):
+        gradients = self.numeric_gradients(layer)
 
-        print("numeric_gradients[-2]:", numeric_gradients[-2])
-        print("analytic_gradients[-2]:", analytic_gradients[-2])
+        # Calling `allclose` with `rtol = 0` means we don't care about the
+        # magnitudes of the values being compared. Instead we are concerned with
+        # only the absolute difference between values, as set by `atol`. TLDR
+        # this check says "are all the derivatives" within `atol` of each other?
+        return np.allclose(self.weight_gradients[layer], gradients, atol = 0.0000001, rtol = 0)
 
-        print("numeric_gradients[-1]:", numeric_gradients[-1])
-        print("analytic_gradients[-1]:", analytic_gradients[-1])
+    def numeric_gradients(self, layer):
+        gradients = np.zeros(self.weights[layer].shape)
 
-        print("delta1:", delta1)
-        print("delta2:", delta2)
+        for row in range(self.num_rows(layer)):
+            for column in range(self.num_columns(layer)):
+                original_weight = self.weights[layer][row][column]
 
-        return (delta1.max() <= acceptable_delta) and (delta2.max() <= acceptable_delta)
+                gradients[row][column] = self.numeric_gradient(original_weight,
+                                                               layer,
+                                                               row,
+                                                               column)
 
-    def __numeric_gradients(self):
-        weights           = np.copy(self.weights)
-        numeric_gradients = []
+                self.weights[layer][row][column] = original_weight
 
-        for i in range(len(weights)):
-            numeric_gradients.append(np.zeros(weights[i].shape))
+        return gradients
 
-        # Skip weights connecting input layer to 1st hidden layer because there
-        # are so many it takes hours to calculate them all.
-        # Not to mention, if you know the second-to-last layer's gradients are
-        # correct, then you can confident that all hidden layer gradients are correct
-        # because they are calculated the same way.
-        for layer in range(1, len(weights)):
-            for column in range(weights[layer].shape[0]):
-                for row in range(weights[layer].shape[1]):
-                    original_weight = weights[layer][column][row]
+    def numeric_gradient(self, weight, layer, row, column):
+        self.weights[layer][row][column]       = weight + self.epsilon
+        network_output_with_weight_adjusted_up = self.network_output()
+        cost_with_weight_adjusted_up           = self.cost(network_output_with_weight_adjusted_up)
 
-                    weights[layer][column][row] = original_weight + self.epsilon
-                    Zplus, Aplus                = ForwardProp(weights, self.biases, self.X).run()
+        self.weights[layer][row][column]         = weight - self.epsilon
+        network_output_with_weight_adjusted_down = self.network_output()
+        cost_with_weight_adjusted_down           = self.cost(network_output_with_weight_adjusted_down)
 
+        cost_difference = (cost_with_weight_adjusted_up - cost_with_weight_adjusted_down)
 
-                    weights[layer][column][row] = original_weight - self.epsilon
-                    Zminus, Aminus              = ForwardProp(weights, self.biases, self.X).run()
+        return cost_difference / (2 * self.epsilon)
 
-                    cost_plus  = Cost(Aplus[-1],  self.Y).cross_entropy_loss()
-                    cost_minus = Cost(Aminus[-1], self.Y).cross_entropy_loss()
+    def cost(self, network_output):
+        return Cost(network_output,
+                    self.labels,
+                    self.weights,
+                    self.regularization_strength).cross_entropy_loss()
 
-                    numeric_gradients[layer][column][row] = (cost_plus - cost_minus) / (2 * self.epsilon)
-                    weights[layer][column][row]           = original_weight # paranoia
+    def network_output(self):
+        forward_prop = ForwardProp(self.weights, self.biases, self.examples)
+        forward_prop.run()
 
-        return numeric_gradients
+        return forward_prop.network_output
+
+    def num_rows(self, layer):
+        return self.weights[layer].shape[0]
+
+    def num_columns(self, layer):
+        return self.weights[layer].shape[1]
