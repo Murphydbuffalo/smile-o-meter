@@ -9,7 +9,7 @@ class Cost:
         self.regularization_strength = regularization_strength
 
     def cross_entropy_loss(self):
-        inverse_log         = -np.log(self.predictions) * self.labels
+        inverse_log         = -np.log(self.predictions + 0.000001) * self.labels
         average_inverse_log = np.sum(inverse_log) / self.num_examples
 
         return average_inverse_log + self.l2_regularization_loss()
