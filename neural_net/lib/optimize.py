@@ -5,7 +5,7 @@ from lib.cost            import Cost
 from lib.backward_prop   import BackwardProp
 
 class Optimize:
-    def __init__(self, examples, labels, optimizer, regularization_strength, num_epochs = 1000, batch_size = 512, logging_enabled = True):
+    def __init__(self, examples, labels, optimizer, regularization_strength, num_epochs = 2500, batch_size = 512, logging_enabled = True):
         self.examples                = examples
         self.labels                  = labels
         self.optimizer               = optimizer
@@ -20,6 +20,8 @@ class Optimize:
     def run(self):
         for epoch in range(self.num_epochs):
             self.log_epoch(epoch)
+
+            self.shuffle_in_unison(self.examples, self.labels)
 
             for batch_number in range(self.num_batches()):
                 examples_batch = self.batch(batch_number, self.examples)
