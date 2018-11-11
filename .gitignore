@@ -10,3 +10,6 @@ neural_net/.Python
 neural_net/output
 neural_net/lib/data/sources/*.npy
 neural_net/lib/data/sources/*.csv
+TODO.markdown
+NOTES_AND_QUESTIONS.markdown
+BLOG_TOPICS.markdown
