@@ -5,7 +5,7 @@ from lib.cost            import Cost
 from lib.backward_prop   import BackwardProp
 
 class Optimize:
-    def __init__(self, examples, labels, optimizer, regularization_strength, num_epochs = 2500, batch_size = 512, logging_enabled = True):
+    def __init__(self, examples, labels, optimizer, regularization_strength, num_epochs = 100, batch_size = 256, logging_enabled = True):
         self.examples                = examples
         self.labels                  = labels
         self.optimizer               = optimizer
@@ -19,10 +19,6 @@ class Optimize:
 
     def run(self):
         for epoch in range(self.num_epochs):
-            self.log_epoch(epoch)
-
-            self.shuffle_in_unison(self.examples, self.labels)
-
             for batch_number in range(self.num_batches()):
                 examples_batch = self.batch(batch_number, self.examples)
                 labels_batch   = self.batch(batch_number, self.labels)
@@ -33,7 +29,6 @@ class Optimize:
                 self.linear_activation, self.nonlinear_activation = forward_prop.run()
 
                 self.current_cost = self.calculate_cost(forward_prop.network_output, labels_batch)
-                self.costs.append(self.current_cost)
 
                 weight_gradients, bias_gradients = self.backward_prop(labels_batch)
 
@@ -41,9 +36,9 @@ class Optimize:
                 self.weights = self.optimizer.weights
                 self.biases  = self.optimizer.biases
 
-                self.log_batch(batch_number)
-
-                if self.training_complete(): return self.learned_parameters()
+            self.costs.append(self.current_cost)
+            self.log_epoch(epoch)
+            if self.training_complete(): return self.learned_parameters()
 
         return self.learned_parameters()
 
@@ -63,26 +58,13 @@ class Optimize:
         return array[:, start_index:end_index]
 
     def training_complete(self):
-        return self.cost_converged() or self.cost_below_threshold()
-
-    def cost_converged(self):
-        recent_costs     = self.costs[-5:]
-        acceptable_delta = 0.001
-
-        if len(recent_costs) < 5: return False
-
-        for i in range(len(recent_costs) - 1):
-            delta = abs(recent_costs[i] - recent_costs[i + 1])
-            if delta > acceptable_delta: return False
-
-        print(f"Cost has converged. Recent costs => {recent_costs}")
-        return True
+        return self.cost_below_threshold() or self.cost_not_decreasing()
 
     def cost_below_threshold(self):
         return self.current_cost <= 0.05
 
-    def current_cost(self):
-        return self.costs[-1]
+    def cost_not_decreasing(self):
+        return len(self.costs) > 4 and self.costs[-1] >= self.costs[-5]
 
     def backward_prop(self, labels_batch):
         return BackwardProp(self.weights,
@@ -99,11 +81,7 @@ class Optimize:
 
     def log_epoch(self, epoch):
         if self.logging_enabled:
-            print(f"\n***Epoch {epoch + 1}***")
-
-    def log_batch(self, batch_number):
-        if self.logging_enabled and (batch_number % 100) == 0:
-            print(f"Batch {batch_number + 1}, Cost {self.current_cost}")
+            print(f"\nEnd of epoch {epoch + 1} - Cost {round(self.current_cost, 4)}")
 
     # Perform identical in-place shuffles on the *columns* of two arrays
     def shuffle_in_unison(self, array1, array2):
