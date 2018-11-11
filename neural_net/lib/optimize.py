@@ -44,9 +44,11 @@ class Optimize:
             self.log_epoch(epoch)
 
             if self.cost_below_threshold():
+                print("\nTraining complete!")
                 break
             if self.cost_not_decreasing():
                 if self.learning_rate_fully_decayed():
+                    print("\nLearning rate fully decayed")
                     break
                 else:
                     print("\nHalving the learning rate!")
