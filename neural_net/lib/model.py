@@ -1,4 +1,5 @@
 import numpy as np
+import os
 
 from lib.utilities.graph import Graph
 from lib.initialize      import Initialize
@@ -16,21 +17,13 @@ class Model:
         self.min_number_hidden_nodes = min_number_hidden_nodes
         self.timer                   = Timer()
 
-    def validate(self):
-        assert hasattr(self, 'learned_weights'), 'You must train the model before it can be validated!'
-
-        predictor = Predict(self.data.validation_examples,
-                            self.data.validation_labels,
-                            self.learned_weights,
-                            self.learned_biases)
-
-        validation_results = predictor.run()
-        self.accuracy      = validation_results['accuracy']
-        self.cost          = validation_results['cost']
-
-        return validation_results
-
     def train(self):
+        if self.hyperparameter_string() in " ".join(os.listdir("./output")):
+            print(f"Model {self.hyperparameter_string()} has already been trained. You can find its learned parameters in ./output")
+            return
+
+        print(f"Training model {self.hyperparameter_string()}")
+
         weights, biases = self.initialize_parameters()
         algorithm       = self.optimization_algorithm(self.learning_rate, weights, biases)
         optimizer       = Optimize(self.data.training_examples,
@@ -44,7 +37,9 @@ class Model:
         self.learned_weights = training_results['weights']
         self.learned_biases  = training_results['biases']
 
-        return training_results
+        self.validate()
+        self.log_results()
+        self.save_parameters()
 
     def initialize_parameters(self):
         print("Network architecture:", self.network_architecture())
@@ -62,6 +57,18 @@ class Model:
 
         return architecture
 
+    def validate(self):
+        predictor = Predict(self.data.validation_examples,
+                            self.data.validation_labels,
+                            self.learned_weights,
+                            self.learned_biases)
+
+        validation_results = predictor.run()
+        self.accuracy      = validation_results['accuracy']
+        self.cost          = validation_results['cost']
+
+        return validation_results
+
     def log_results(self):
         print("\nTRAINING INFO")
         print(f"Total training time: {self.timer.string()}")
@@ -76,18 +83,14 @@ class Model:
         print("Average cost:", self.cost)
 
     def save_parameters(self):
-        assert hasattr(self, 'accuracy'), 'You must validate the model before saving its learned parameters!'
         np.save(self.weights_filename(), self.learned_weights)
         np.save(self.biases_filename(),  self.learned_biases)
 
     def weights_filename(self):
-        return ("./output/accuracy-{0}-{1}-weights").format(self.accuracy, self.hash())
+        return ("./output/accuracy-{0}-{1}-weights").format(self.accuracy, self.hyperparameter_string())
 
     def biases_filename(self):
-        return ("./output/accuracy-{0}-{1}-biases").format(self.accuracy, self.hash())
-
-    def hash(self):
-        return str(hash(self.hyperparameter_string()))
+        return ("./output/accuracy-{0}-{1}-biases").format(self.accuracy, self.hyperparameter_string())
 
     def hyperparameter_string(self):
         hyperparameters = ['algorithm',
