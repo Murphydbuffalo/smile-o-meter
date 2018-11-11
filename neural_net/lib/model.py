@@ -47,6 +47,7 @@ class Model:
         return training_results
 
     def initialize_parameters(self):
+        print("Network architecture:", self.network_architecture())
         return Initialize(self.network_architecture()).weights_and_biases()
 
     def network_architecture(self):
