@@ -38,7 +38,12 @@ class Optimize:
 
             self.costs.append(self.current_cost)
             self.log_epoch(epoch)
-            if self.training_complete(): return self.learned_parameters()
+
+            if self.training_complete():
+                return self.learned_parameters()
+
+            if epoch % (self.num_epochs / 4) == 0:
+                self.optimizer.learning_rate = self.optimizer.learning_rate * 0.5
 
         return self.learned_parameters()
 
