@@ -1,15 +1,16 @@
 import numpy as np
 
 class Cost:
-    def __init__(self, predictions, labels, weights, regularization_strength):
+    def __init__(self, predictions, labels, weights, regularization_strength, numeric_stabilizer = 0.000001):
         self.predictions             = predictions
         self.labels                  = labels
         self.num_examples            = float(labels.shape[1])
         self.weights                 = weights
         self.regularization_strength = regularization_strength
+        self.numeric_stabilizer      = numeric_stabilizer
 
     def cross_entropy_loss(self):
-        inverse_log         = -np.log(self.predictions + 0.000001) * self.labels
+        inverse_log         = -np.log(self.predictions + self.numeric_stabilizer) * self.labels
         average_inverse_log = np.sum(inverse_log) / self.num_examples
 
         return average_inverse_log + self.l2_regularization_loss()

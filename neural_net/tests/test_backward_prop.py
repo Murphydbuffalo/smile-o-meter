@@ -2,7 +2,6 @@ import unittest
 import numpy as np
 
 from lib.forward_prop                import ForwardProp
-from lib.cost                        import Cost
 from lib.backward_prop               import BackwardProp
 from lib.gradient_check              import GradientCheck
 from lib.optimizers.gradient_descent import GradientDescent

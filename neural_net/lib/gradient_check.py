@@ -31,11 +31,13 @@ class GradientCheck:
     def run(self, layer):
         gradients = self.numeric_gradients(layer)
 
-        # Calling `allclose` with `rtol = 0` means we don't care about the
-        # magnitudes of the values being compared. Instead we are concerned with
-        # only the absolute difference between values, as set by `atol`. TLDR
-        # this check says "are all the derivatives" within `atol` of each other?
-        return np.allclose(self.weight_gradients[layer], gradients, atol = 0.0000001, rtol = 0)
+        # Calling `allclose` with `atol = 0` means we don't care about the
+        # absolute difference between the analytic and numeric gradients.
+        # Using a positive `rtol` value means that we *do* care about the relative
+        # magnitudes of the values being compared. In effect this makes our
+        # gradient check say "are the numeric gradients within
+        # `rtol * analytic gradients` of the analytic gradients?"
+        return np.allclose(self.weight_gradients[layer], gradients, atol = 0, rtol = 0.0001)
 
     def numeric_gradients(self, layer):
         gradients = np.zeros(self.weights[layer].shape)
@@ -70,7 +72,8 @@ class GradientCheck:
         return Cost(network_output,
                     self.labels,
                     self.weights,
-                    self.regularization_strength).cross_entropy_loss()
+                    self.regularization_strength,
+                    0.0).cross_entropy_loss()
 
     def network_output(self):
         forward_prop = ForwardProp(self.weights, self.biases, self.examples)
