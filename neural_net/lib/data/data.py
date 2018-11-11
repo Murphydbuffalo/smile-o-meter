@@ -9,9 +9,9 @@ class Data:
         self.filename = filename
 
     def build(self, save_statistics = True):
-        raw_data   = Raw(self.filename).load()
-        augmenter  = Augmenter(raw_data.training_examples,
-                               raw_data.training_labels).augment()
+        raw_data  = Raw(self.filename).load()
+        augmenter = Augmenter(raw_data.training_examples,
+                              raw_data.training_labels).augment()
 
         normalizer = Normalizer(augmenter.augmented_examples,
                                 raw_data.validation_examples,

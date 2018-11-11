@@ -15,10 +15,6 @@ class Augmenter:
             [augmenters.Fliplr(1)],
             # Change brightness via multiplication
             [augmenters.Multiply((0.5, 1.5))],
-            # Crop by 0-25% on each side
-            [augmenters.Crop(px=((0, 25), (0, 25), (0, 25), (0, 25)))],
-            # Pad by 0-25% on each side
-            [augmenters.Pad(px=((0, 25), (0, 25), (0, 25), (0, 25)))],
             # Rotate up to 45 degrees in either direction
             [augmenters.Affine(rotate=(-45, 45))],
         ]
