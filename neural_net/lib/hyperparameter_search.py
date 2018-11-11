@@ -1,6 +1,6 @@
 import numpy as np
 
-learning_rates              = [1e-01, 1e-02, 1e-03, 1e-04, 1e-5]
+learning_rates              = [1e-01, 1e-02, 1e-03, 1e-04]
 regularization_strengths    = [1e-02, 1e-03, 1e-04, 1e-05, 1e-6]
 number_hidden_layers        = [1, 2, 3]
 min_number_hidden_nodes     = [50, 100, 200]
