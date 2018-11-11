@@ -5,20 +5,24 @@ from lib.cost            import Cost
 from lib.backward_prop   import BackwardProp
 
 class Optimize:
-    def __init__(self, examples, labels, optimizer, regularization_strength, num_epochs = 100, batch_size = 256, logging_enabled = True):
-        self.examples                = examples
-        self.labels                  = labels
-        self.optimizer               = optimizer
-        self.weights                 = optimizer.weights
-        self.biases                  = optimizer.biases
-        self.regularization_strength = regularization_strength
-        self.num_epochs              = num_epochs
-        self.batch_size              = batch_size
-        self.costs                   = []
-        self.logging_enabled         = logging_enabled
+    def __init__(self, examples, labels, optimizer, regularization_strength, batch_size = 256, logging_enabled = True):
+        self.examples                 = examples
+        self.labels                   = labels
+        self.optimizer                = optimizer
+        self.weights                  = optimizer.weights
+        self.biases                   = optimizer.biases
+        self.regularization_strength  = regularization_strength
+        self.batch_size               = batch_size
+        self.costs                    = []
+        self.num_learning_rate_decays = 0
+        self.logging_enabled          = logging_enabled
 
     def run(self):
-        for epoch in range(self.num_epochs):
+        epoch = 0
+
+        while True:
+            epoch = epoch + 1
+
             for batch_number in range(self.num_batches()):
                 examples_batch = self.batch(batch_number, self.examples)
                 labels_batch   = self.batch(batch_number, self.labels)
@@ -39,11 +43,15 @@ class Optimize:
             self.costs.append(self.current_cost)
             self.log_epoch(epoch)
 
-            if self.training_complete():
-                return self.learned_parameters()
-
-            if epoch % (self.num_epochs / 4) == 0:
-                self.optimizer.learning_rate = self.optimizer.learning_rate * 0.5
+            if self.cost_below_threshold():
+                break
+            if self.cost_not_decreasing():
+                if self.learning_rate_fully_decayed():
+                    break
+                else:
+                    print("\nHalving the learning rate!")
+                    self.optimizer.learning_rate  = self.optimizer.learning_rate * 0.5
+                    self.num_learning_rate_decays = self.num_learning_rate_decays + 1
 
         return self.learned_parameters()
 
@@ -62,14 +70,14 @@ class Optimize:
         end_index   = start_index  + self.batch_size
         return array[:, start_index:end_index]
 
-    def training_complete(self):
-        return self.cost_below_threshold() or self.cost_not_decreasing()
-
     def cost_below_threshold(self):
         return self.current_cost <= 0.05
 
     def cost_not_decreasing(self):
         return len(self.costs) > 4 and self.costs[-1] >= self.costs[-5]
+
+    def learning_rate_fully_decayed(self):
+        return self.num_learning_rate_decays == 4
 
     def backward_prop(self, labels_batch):
         return BackwardProp(self.weights,
@@ -86,7 +94,7 @@ class Optimize:
 
     def log_epoch(self, epoch):
         if self.logging_enabled:
-            print(f"\nEnd of epoch {epoch + 1} - Cost {round(self.current_cost, 4)}")
+            print(f"\nEnd of epoch {epoch} - Cost {round(self.current_cost, 4)}")
 
     # Perform identical in-place shuffles on the *columns* of two arrays
     def shuffle_in_unison(self, array1, array2):
