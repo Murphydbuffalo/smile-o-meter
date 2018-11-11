@@ -37,7 +37,7 @@ class GradientCheck:
         # magnitudes of the values being compared. In effect this makes our
         # gradient check say "are the numeric gradients within
         # `rtol * analytic gradients` of the analytic gradients?"
-        return np.allclose(self.weight_gradients[layer], gradients, atol = 0, rtol = 0.0001)
+        return np.allclose(self.weight_gradients[layer], gradients, atol = 0, rtol = 0.0005)
 
     def numeric_gradients(self, layer):
         gradients = np.zeros(self.weights[layer].shape)

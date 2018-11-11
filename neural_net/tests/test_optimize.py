@@ -12,8 +12,7 @@ num_input_features      = 10
 num_hidden_layer_nodes  = 5
 num_classes             = 3
 num_examples            = 100
-small_num_epochs        = 10
-big_num_epochs          = 100
+num_epochs              = 100
 batch_size              = 10
 
 # Can't pass a Numpy array to `hash`, so we first convert it to a tuple
@@ -45,7 +44,7 @@ class TestOptimize(unittest.TestCase):
                                                    labels,
                                                    gradient_descent,
                                                    regularization_strength,
-                                                   num_epochs      = small_num_epochs,
+                                                   num_epochs      = num_epochs,
                                                    batch_size      = batch_size,
                                                    logging_enabled = False)
 
@@ -53,7 +52,7 @@ class TestOptimize(unittest.TestCase):
                                        labels,
                                        adam,
                                        regularization_strength,
-                                       num_epochs      = big_num_epochs,
+                                       num_epochs      = num_epochs,
                                        batch_size      = batch_size,
                                        logging_enabled = False)
 
@@ -74,11 +73,9 @@ class TestOptimize(unittest.TestCase):
         result = self.gradient_descent_optimizer.run()
         costs  = result['costs']
 
-        # Assert that cost decreases every epoch
-        for epoch in range(1, small_num_epochs):
-            previous_epoch_start = (epoch - 1) * batch_size
-            current_epoch_start  = epoch * batch_size
-            self.assertTrue(costs[previous_epoch_start] > costs[current_epoch_start])
+        # Assert that cost decreases every 5th epoch
+        for epoch in range(1, int(len(costs) / 5)):
+            self.assertTrue(costs[epoch * 5] < costs[(epoch - 1) * 5])
 
     def test_returns_learned_parameters_and_cost_with_adam(self):
         result = self.adam_optimizer.run()
@@ -97,13 +94,9 @@ class TestOptimize(unittest.TestCase):
         result = self.adam_optimizer.run()
         costs  = result['costs']
 
-        # Assert that cost decreases every 20th epoch rather than every single
-        # epoch, because Adam is a little less consistent in decreasing cost
-        # than GradientDescent
-        for epoch in range(1, int(big_num_epochs / 20)):
-            previous_epoch_start = (epoch - 1) * 20 * batch_size
-            current_epoch_start  = epoch * 20 * batch_size
-            self.assertTrue(costs[previous_epoch_start] > costs[current_epoch_start])
+        # Assert that cost decreases every 5th epoch
+        for epoch in range(1, int(len(costs) / 5)):
+            self.assertTrue(costs[epoch * 5] < costs[(epoch - 1) * 5])
 
     def test_shuffle_in_unison(self):
         raw_data  = Raw('./lib/data/sources/fer_subset.csv').load()
