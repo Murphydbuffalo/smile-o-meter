@@ -3,7 +3,7 @@ import numpy as np
 
 from lib.forward_prop                import ForwardProp
 from lib.backward_prop               import BackwardProp
-from lib.gradient_check              import GradientCheck
+from lib.utilities.gradient_check    import GradientCheck
 from lib.optimizers.gradient_descent import GradientDescent
 
 learning_rate          = 0.01
