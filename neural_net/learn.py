@@ -17,7 +17,7 @@ for hyperparameters in HyperparameterSearch().hyperparameters():
                   hyperparameters['min_number_hidden_nodes'])
 
     if model.hash() in " ".join(os.listdir("./output")):
-        printf(f"Skipping model {model.hyperparameter_string()} because it's already been trained")
+        print(f"Skipping model {model.hyperparameter_string()} because it's already been trained")
         continue
 
     print(f"Training model {model.hyperparameter_string()}")
