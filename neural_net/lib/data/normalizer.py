@@ -13,10 +13,10 @@ class Normalizer:
 
         if save_statistics:
             print("Saving training set statistics for normalization...")
-            np.save('./output/training_set_feature_means',
+            np.save('./lib/data/normalization_statistics/training_set_feature_means',
                     zero_mean_training_data)
 
-            np.save('./output/training_set_zero_mean_feature_standard_deviations',
+            np.save('./lib/data/normalization_statistics/training_set_zero_mean_feature_standard_deviations',
                     zero_mean_training_set_standard_deviations)
 
         # Transform training data so it has mean 0 and variance 1
