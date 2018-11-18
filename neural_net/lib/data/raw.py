@@ -19,11 +19,14 @@ class Raw:
     def load(self):
         try:
             for row in self.csv:
-                pixels  = row['pixels'].split()
+                klass = int(row['emotion'])
+                if self.is_irrelevant_class(klass): continue
+                label = self.label(klass)
+
+                pixels = row['pixels'].split()
                 if self.bad_data(pixels): continue
 
                 dataset = row['Usage']
-                label   = self.label(row)
 
                 self.datasets[dataset]['examples'].append(pixels)
                 self.datasets[dataset]['labels'].append(label)
@@ -47,15 +50,19 @@ class Raw:
         finally:
             self.file.close()
 
+    # Labels: 0=Angry, 1=Disgust, 2=Fear, 3=Happy, 4=Sad, 5=Surprise, 6=Neutral
+    # We only care about happy, sad, and neutral.
+    def is_irrelevant_class(self, klass):
+        return klass not in [3, 4, 6]
+
     # Convert an integer into a "one-hot" vector of 0s and 1s, with the sole 1
     # at the index corresponding to the integer. Eg, with 7 possible classes the
     # zero-indexed label `3` becomes `[0, 0, 0, 1, 0, 0, 0]`. The neural network
     # outputs its predictions as vectors of this form, so it's easiest to convert
     # the labels to the same form for comparison.
-    def label(self, row):
-        one_hot_vector            = [[0]] * self.num_classes
-        fer_label                 = int(row['emotion'])
-        one_hot_vector[fer_label] = [1]
+    def label(self, klass):
+        one_hot_vector        = [[0]] * self.num_classes
+        one_hot_vector[klass] = [1]
 
         return one_hot_vector
 
