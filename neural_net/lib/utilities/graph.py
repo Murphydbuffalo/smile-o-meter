@@ -8,8 +8,8 @@ class Graph:
         self.xlabel = xlabel
         self.data   = data
 
-    def render(self):
+    def save(self, filename):
         pyplot.ylabel(self.ylabel)
         pyplot.xlabel(self.xlabel)
         pyplot.plot(self.data)
-        pyplot.show()
+        pyplot.savefig(filename)

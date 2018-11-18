@@ -1,11 +1,12 @@
 import numpy as np
 import os
 
-from lib.utilities.graph import Graph
-from lib.initialize      import Initialize
-from lib.optimize        import Optimize
-from lib.predict         import Predict
-from lib.utilities.timer import Timer
+from lib.utilities.confusion_matrix import ConfusionMatrix
+from lib.utilities.graph            import Graph
+from lib.initialize                 import Initialize
+from lib.optimize                   import Optimize
+from lib.predict                    import Predict
+from lib.utilities.timer            import Timer
 
 class Model:
     def __init__(self, data, optimization_algorithm, learning_rate, regularization_strength, num_layers, min_number_hidden_nodes):
@@ -16,13 +17,20 @@ class Model:
         self.num_hidden_layers       = num_layers
         self.min_number_hidden_nodes = min_number_hidden_nodes
         self.timer                   = Timer()
+        self.hyperparameters         = {
+            'Algorithm':               optimization_algorithm.__name__,
+            'Learning Rate':           learning_rate,
+            'Regularization Strength': regularization_strength,
+            'Num Hidden Layers':       num_layers,
+            'Min Number Hidden Nodes': min_number_hidden_nodes
+        }
 
     def train(self):
-        if self.hyperparameter_string() in " ".join(os.listdir("./output")):
-            print(f"Model {self.hyperparameter_string()} has already been trained. You can find its learned parameters in ./output")
+        if self.hash() in " ".join(os.listdir("./output")):
+            print(f"Model {self.hash()} has already been trained. You can find its learned parameters and data about its effectiveness in {self.dirname()}.")
             return
 
-        print(f"Training model {self.hyperparameter_string()}")
+        print(f"Training model {self.hash()}")
 
         weights, biases = self.initialize_parameters()
         algorithm       = self.optimization_algorithm(self.learning_rate, weights, biases)
@@ -38,8 +46,7 @@ class Model:
         self.learned_biases  = training_results['biases']
 
         self.validate()
-        self.log_results()
-        self.save_parameters()
+        self.save_output()
 
     def initialize_parameters(self):
         print("Network architecture:", self.network_architecture())
@@ -63,51 +70,49 @@ class Model:
                             self.learned_weights,
                             self.learned_biases)
 
-        validation_results = predictor.run()
-        self.accuracy      = validation_results['accuracy']
-        self.cost          = validation_results['cost']
+        validation_results     = predictor.run()
+        self.accuracy          = round(validation_results['accuracy'], 4)
+        self.cost              = round(validation_results['cost'], 4)
+        self.actual_classes    = predictor.actual_classes
+        self.predicted_classes = predictor.predicted_classes()
 
-        return validation_results
+    def save_output(self):
+        os.mkdir(self.dirname())
 
-    def log_results(self):
-        print("\nTRAINING INFO")
-        print(f"Total training time: {self.timer.string()}")
-        print(f"Algorithm: {self.optimization_algorithm.__name__}")
-        print(f"Learning rate: {self.learning_rate}")
-        print(f"Regularization strength: {self.regularization_strength}")
-        print(f"Number of hidden layers: {self.num_hidden_layers}")
-        print(f"Number of hidden nodes in smallest layer: {self.min_number_hidden_nodes}")
+        np.save(self.dirname() + "/weights", self.learned_weights)
+        np.save(self.dirname() + "/biases",  self.learned_biases)
 
-        print("\nVALIDATION RESULTS")
-        print("Accuracy:",     self.accuracy)
-        print("Average cost:", self.cost)
+        with open(self.dirname() + "/results.txt", "a") as results_file:
+            results_file.write(self.results_string())
+            results_file.close()
 
-    def save_parameters(self):
-        np.save(self.weights_filename(), self.learned_weights)
-        np.save(self.biases_filename(),  self.learned_biases)
+        self.graph_costs()
 
-    def weights_filename(self):
-        return ("./output/accuracy-{0}-{1}-weights").format(self.accuracy, self.hyperparameter_string())
+        print(f"Results saved to {self.dirname()}\n")
 
-    def biases_filename(self):
-        return ("./output/accuracy-{0}-{1}-biases").format(self.accuracy, self.hyperparameter_string())
+    def results_string(self):
+        string = "Hyperparameters:\n"
 
-    def hyperparameter_string(self):
-        hyperparameters = ['algorithm',
-                           self.algorithm_name(),
-                           'learning-rate',
-                           self.learning_rate,
-                           'regularization-strength',
-                           self.regularization_strength,
-                           'num-hidden-layers',
-                           self.num_hidden_layers,
-                           'min-number-hidden-nodes',
-                           self.min_number_hidden_nodes]
+        for key, value in self.hyperparameters.items():
+            string = string + f"{key} => {value}\n"
 
-        return '-'.join([str(hp) for hp in hyperparameters])
+        string = string + f"\nTotal training time => {self.timer.string()}\n"
+        string = string + f"\nAverage validation cost => {self.cost}\n"
+        string = string + f"Validation accuracy => {self.accuracy}\n"
+        string = string + f"\nConfusion Matrix:\n{self.confusion_matrix()}\n"
 
-    def algorithm_name(self):
-        return self.optimization_algorithm.__name__
+        return string
 
-    def graph_training_costs(self):
-        Graph(ylabel = "Cost", xlabel = "Iteration", data = self.training_costs).render()
+    def dirname(self):
+        return ("./output/accuracy-{0}-{1}").format(self.accuracy, self.hash())
+
+    def hash(self):
+        hyperparameter_string = '-'.join([f"{key}-{value}" for key, value in self.hyperparameters.items()])
+        return str(hash(hyperparameter_string))
+
+    def confusion_matrix(self):
+        return ConfusionMatrix(self.actual_classes, self.predicted_classes).string()
+
+    def graph_costs(self):
+        graph = Graph(ylabel = "Cost", xlabel = "Iteration", data = self.training_costs)
+        graph.save(f"{self.dirname()}/costs.png")
