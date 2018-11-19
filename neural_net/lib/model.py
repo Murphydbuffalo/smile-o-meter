@@ -49,7 +49,6 @@ class Model:
         self.save_output()
 
     def initialize_parameters(self):
-        print("Network architecture:", self.network_architecture())
         return Initialize(self.network_architecture()).weights_and_biases()
 
     def network_architecture(self):
@@ -91,7 +90,8 @@ class Model:
         print(f"Results saved to {self.dirname()}\n")
 
     def results_string(self):
-        string = "Hyperparameters:\n"
+        string = f"Network architecture:\n{self.network_architecture()}\n"
+        string = string + "Hyperparameters:\n"
 
         for key, value in self.hyperparameters.items():
             string = string + f"{key} => {value}\n"
