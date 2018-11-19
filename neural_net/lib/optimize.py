@@ -46,7 +46,7 @@ class Optimize:
             if self.cost_below_threshold():
                 print("\nTraining complete!")
                 break
-            if self.cost_not_decreasing():
+            if self.cost_not_decreasing(epoch):
                 if self.learning_rate_fully_decayed():
                     print("\nLearning rate fully decayed")
                     break
@@ -75,8 +75,8 @@ class Optimize:
     def cost_below_threshold(self):
         return self.current_cost <= 0.05
 
-    def cost_not_decreasing(self):
-        return len(self.costs) > 4 and self.costs[-1] >= self.costs[-5]
+    def cost_not_decreasing(self, epoch):
+        return len(self.costs) > 4 and epoch % 5 == 0 and (self.costs[-1] - self.costs[-5]) < 0.001
 
     def learning_rate_fully_decayed(self):
         return self.num_learning_rate_decays == 4
